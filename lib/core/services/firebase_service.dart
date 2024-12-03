@@ -8,10 +8,10 @@ import 'package:geogate/core/shared/modal/modal.dart';
 
 class FirebaseService {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-static const String FIREBASE_API_KEY ="AIzaSyDrfjVCPlQKM-NNx0fhFrNsPY7UOJiw7nk";
-static const String FIREBASE_APP_ID ="1:302420639094:android:c5ac24ddbb9d92cb5b4e57";
-static const String FIREBASE_PROJECT_ID ="geolocation-b3fab";
-static const String FIREBASE_SENDER_ID ="302420639094";
+static const String FIREBASE_API_KEY ="AIzaSyCTGOb_WXgQVyqSUnqQ64UkqiQShxbWZpw";
+static const String FIREBASE_APP_ID ="1:519239616286:android:fda25c646613c6fbd1eb0f";
+static const String FIREBASE_PROJECT_ID ="geogate-e01f8";
+static const String FIREBASE_SENDER_ID ="519239616286";
 
 
 static Future<FirebaseApp> initializeApp() async {

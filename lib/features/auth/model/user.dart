@@ -1,26 +1,15 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
-
-
-
-class Role  {
-    static String ADMIN = 'admin';
-    static String User = 'user';
-}
+import 'package:geogate/features/auth/model/course.dart';
+import 'package:geogate/features/auth/model/user_details.dart';
 
 class User {
-
-
   final int? id;
   final String? firstName;
   final String? lastName;
   final String? fullName;
   final String? email;
-  final String? role;
   final String? image;
- 
+  final UserDetails? userDetails;
+  final Course? course;
 
   User({
     this.id,
@@ -28,27 +17,26 @@ class User {
     this.lastName,
     this.fullName,
     this.email,
-    this.role,
     this.image,
-  
+    this.userDetails,
+    this.course,
   });
 
-  // Factory constructor to create a User from a JSON object
   factory User.fromJson(Map<String, dynamic> json) {
-  return User(
-    id: json['id'],  // Nullable
-    firstName: json['first_name'] ?? null,  // This ensures 'null' is handled correctly
-    lastName: json['last_name'] ?? null,    // This allows for null values
-    fullName: json['full_name'] ?? null,    
-    email: json['email'] ?? null,          
-    role: json['role'] ?? null,            // Null is expected here since role might be null
-    image: json['image'] ?? null,          // Image might be null
-    
-  );
-}
+    return User(
+      id: json['id'],
+      firstName: json['first_name'],
+      lastName: json['last_name'],
+      fullName: json['full_name'],
+      email: json['email'],
+      image: json['image'],
+      userDetails: json['user_details'] != null
+          ? UserDetails.fromJson(json['user_details'])
+          : null,
+      course: json['course'] != null ? Course.fromJson(json['course']) : null,
+    );
+  }
 
-
-  // Convert User object to JSON for storage if necessary
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -56,9 +44,9 @@ class User {
       'last_name': lastName,
       'full_name': fullName,
       'email': email,
-      'role': role,
       'image': image,
-     
+      'user_details': userDetails?.toJson(),
+      'course': course?.toJson(),
     };
   }
 
@@ -68,9 +56,9 @@ class User {
     String? lastName,
     String? fullName,
     String? email,
-    String? role,
     String? image,
-   
+    UserDetails? userDetails,
+    Course? course,
   }) {
     return User(
       id: id ?? this.id,
@@ -78,44 +66,14 @@ class User {
       lastName: lastName ?? this.lastName,
       fullName: fullName ?? this.fullName,
       email: email ?? this.email,
-      role: role ?? this.role,
       image: image ?? this.image,
-      
+      userDetails: userDetails ?? this.userDetails,
+      course: course ?? this.course,
     );
   }
 
   @override
   String toString() {
-    return 'User(id: $id, firstName: $firstName, lastName: $lastName, fullName: $fullName, email: $email, role: $role, image: $image, )';
+    return 'User(id: $id, firstName: $firstName, lastName: $lastName, fullName: $fullName, email: $email, image: $image, userDetails: $userDetails, course: $course)';
   }
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'id': id,
-      'first_name': firstName,
-      'last_name': lastName,
-      'full_name': fullName,
-      'email': email,
-      'role': role,
-      'image': image,
-      
-    };
-  }
-
-  factory User.fromMap(Map<String, dynamic> map) {
-    return User(
-      id: map['id'] != null ? map['id'] as int : null,
-      firstName: map['first_name'] != null ? map['first_name'] as String : null,
-      lastName: map['last_name'] != null ? map['last_name'] as String : null,
-      fullName: map['full_name'] != null ? map['full_name'] as String : null,
-      email: map['email'] != null ? map['email'] as String : null,
-      role: map['role'] != null ? map['role'] as String : null,
-      image: map['image'] != null ? map['image'] as String : null,
-      
-    );
-  }
-
-
-
-
 }
