@@ -20,7 +20,7 @@ class LocalImageSvg extends StatelessWidget {
    return Container(
       decoration: BoxDecoration(
         borderRadius: borderRadius,
-      ),
+    ),
       child: ClipRRect(
         borderRadius: borderRadius ?? BorderRadius.circular(0),
         child: SvgPicture.asset(

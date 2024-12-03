@@ -12,7 +12,7 @@ typedef EitherModel<T> = Either<Failure, T>;
 
 class ApiService {
   static final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'https://geolocation.me/api/',
+    baseUrl: 'https://mobicom.me/api/',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',

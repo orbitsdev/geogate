@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "519239616286-p6jhpaol2cecmmdr7qsqkmtg25car3qt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.geogate.orbitsdev",
+            "certificate_hash": "4251c5750882cd7d9648ea9a20dc3b489bc2b915"
+          }
+        },
+        {
           "client_id": "519239616286-o91dnd73jft694o1pclfa0sqkc607o3i.apps.googleusercontent.com",
           "client_type": 3
         }

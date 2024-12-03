@@ -435,8 +435,11 @@ Future<void> signInWithGoogle() async {
     }
 
     Modal.loading();
-    final GoogleSignInAccount? googleAccount =
-        await googleSignIn.signIn().catchError((err) {
+    final GoogleSignInAccount? googleAccount = await googleSignIn.signIn().catchError((err) {
+
+      print('------------------ ERROR');
+      print('${err}');
+      print('------------------ ERRORS');
       Get.back();
       Modal.showToast(msg: err.toString());
     });
