@@ -31,9 +31,7 @@ class AuthController extends GetxController {
 
   final signupFormKey = GlobalKey<FormBuilderState>();
 
-  var obscureText = true.obs;
-  var obscurePassword = true.obs;
-  var obscureConfirm = true.obs;
+
 
   var isLoginLoading = false.obs;
   var isSignupLoading = false.obs;
@@ -44,7 +42,6 @@ class AuthController extends GetxController {
   var token = ''.obs;
   var isTokenLoaded = false.obs;
 
-int? selectedPositionId; 
 
 
   var uploadProgress = 0.0.obs;
@@ -217,21 +214,6 @@ Future<void> updateProfile() async {
     return token.isNotEmpty;
   }
 
-  void togglePassword() {
-    obscureText.value = !obscureText.value;
-  }
-
-  void togglePasswordSignup() {
-    obscurePassword.value = !obscurePassword.value;
-  }
-
-  void togglePasswordConfirm() {
-    obscureConfirm.value = !obscureConfirm.value;
-  }
-
-  void toggleRememberMe() {
-    rememberMe.value = !rememberMe.value;
-  }
 
   Future<void> login(Map<String, dynamic>? formData) async {
     isLoginLoading(true);
@@ -266,43 +248,7 @@ Future<void> updateProfile() async {
     isLoginLoading(false);
   }
 
-  Future<void> register() async {
-    if (signupFormKey.currentState?.saveAndValidate() ?? false) {
-      final formData = signupFormKey.currentState?.value;
-
-      isSignupLoading(true);
-      Modal.loading(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
-      );
-
-      final response = await ApiService.postPublicResource('register', {
-        'first_name': formData?['first_name'],
-        'last_name': formData?['last_name'],
-        'email': formData?['email'],
-        'password': formData?['password'],
-        'password_confirmation': formData?['password_confirmation'],
-      });
-
-      Get.back(); // Dismiss loading modal
-
-      response.fold(
-        (failure) {
-          isSignupLoading(false);
-          Modal.errorDialog(failure: failure);
-        },
-        (success) async {
-          final data = success.data['data'];
-          await SecureStorage().writeSecureData('token', data['access_token']);
-          await SecureStorage().writeSecureData('user', jsonEncode(data['user']));
-          await loadTokenAndUser();
-           await AuthController.controller.updateDeviceToken();
-          Get.offAllNamed('/home-main');
-        },
-      );
-      isSignupLoading(false);
-    }
-  }
-
+ 
   Future<void> clearLocalData() async {
     await SecureStorage().deleteSecureData('token');
     await SecureStorage().deleteSecureData('user');
@@ -481,7 +427,7 @@ Future<void> updateProfile() async {
   
 
 
-Future<void> signInWithGoogle(BuildContext context) async {
+Future<void> signInWithGoogle() async {
     String? userDetails = await SecureStorage().readSecureData('user');
 
     if (userDetails == null) {
