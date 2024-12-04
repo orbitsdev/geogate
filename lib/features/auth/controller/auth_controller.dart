@@ -305,11 +305,7 @@ Future<bool> fetchAndUpdateUserDetails({bool showModal = true}) async {
         return false; // Return false indicating failure
       },
       (success) async {
-        print('----------ORIGINAL USER DETAILS----------');
-        print('User Data: ${success.data['data']}');
-        print('Course: ${success.data['data']['user_details']['course']}');
-        print('Campus: ${success.data['data']['user_details']['course']['campus']}');
-        print('------------------------------------------');
+      
 
         // Parse the fetched user details
         final updatedUser = User.fromJson(success.data['data']);

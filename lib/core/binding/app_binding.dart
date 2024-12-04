@@ -5,6 +5,7 @@ import 'package:geogate/core/shared/controller/modal_controller.dart';
 import 'package:geogate/core/shared/controller/notification_controller.dart';
 import 'package:geogate/features/auth/controller/auth_controller.dart';
 import 'package:geogate/features/course/controller/course_controller.dart';
+import 'package:geogate/features/event/controller/event_controller.dart';
 import 'package:get/get.dart';
 
 class AppBinding  extends Bindings{
@@ -17,6 +18,7 @@ class AppBinding  extends Bindings{
     Get.put(NotificationController(), permanent: true);
     Get.put(ModalController(), permanent: true);
     Get.put(CourseController(), permanent: true);
+    Get.put(EventController(), permanent: true);
  
   }
 

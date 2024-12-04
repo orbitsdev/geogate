@@ -3,23 +3,39 @@ import 'package:geogate/core/helpers/functions.dart';
 import 'package:geogate/core/shared/widgets/online_image.dart';
 import 'package:geogate/core/theme/palette.dart';
 import 'package:geogate/features/auth/controller/auth_controller.dart';
+import 'package:geogate/features/event/controller/event_controller.dart';
+import 'package:geogate/features/event/widget/event_card.dart';
 import 'package:get/get.dart';
+import 'package:gap/gap.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final AuthController authController = Get.find<AuthController>();
+  _HomePageState createState() => _HomePageState();
+}
 
+class _HomePageState extends State<HomePage> {
+  final AuthController authController = Get.find<AuthController>();
+  final EventController eventController = Get.find<EventController>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      eventController.getActiveEvent();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {
-          // Trigger the fetch and update function
-          await authController.fetchAndUpdateUserDetails();
+          await eventController.refreshData();
         },
         child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(), // Enable pull-to-refresh
+          physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             // SliverAppBar for the header
             SliverAppBar(
@@ -63,10 +79,9 @@ class HomePage extends StatelessWidget {
                                 ?.copyWith(color: Colors.white70),
                           ),
                           Text(
+                            authController.user.value.userDetails?.lastName ?? "User",
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            authController.user.value.userDetails?.lastName ??
-                                "User",
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyLarge
@@ -91,8 +106,40 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
-
-            
+            // Live Event Section
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Event Now !',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Palette.TEXT_DARK,
+                          ),
+                    ),
+                    const Gap(16),
+                    Obx(
+                      () => eventController.isLoading.value
+                          ? Center(child: CircularProgressIndicator())
+                          : eventController.activeEvent.value.id == null
+                              ? Center(
+                                  child: Text(
+                                    'No Active Event',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(color: Palette.TEXT_LIGHT),
+                                  ),
+                                )
+                              : EventCard(event: eventController.activeEvent.value),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

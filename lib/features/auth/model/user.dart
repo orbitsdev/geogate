@@ -6,7 +6,7 @@ class User {
   final String? lastName;
   final String? fullName;
   final String? email;
-  final String? role;
+  
   final String? image;
   final UserDetails? userDetails;
 
@@ -16,7 +16,7 @@ class User {
     this.lastName,
     this.fullName,
     this.email,
-    this.role,
+ 
     this.image,
     this.userDetails,
   });
@@ -28,7 +28,6 @@ class User {
       lastName: json['last_name'],
       fullName: json['full_name'],
       email: json['email'],
-      role: json['role'],
       image: json['image'],
       userDetails: json['user_details'] != null
           ? UserDetails.fromJson(json['user_details'])
@@ -43,7 +42,6 @@ class User {
       lastName: map['last_name'],
       fullName: map['full_name'],
       email: map['email'],
-      role: map['role'],
       image: map['image'],
       userDetails: map['user_details'] != null
           ? UserDetails.fromMap(map['user_details'])
@@ -58,7 +56,7 @@ class User {
       'last_name': lastName,
       'full_name': fullName,
       'email': email,
-      'role': role,
+     
       'image': image,
       'user_details': userDetails?.toJson(),
     };
@@ -71,7 +69,7 @@ class User {
       'last_name': lastName,
       'full_name': fullName,
       'email': email,
-      'role': role,
+     
       'image': image,
       'user_details': userDetails?.toMap(),
     };
@@ -83,7 +81,6 @@ class User {
     String? lastName,
     String? fullName,
     String? email,
-    String? role,
     String? image,
     UserDetails? userDetails,
   }) {
@@ -93,7 +90,6 @@ class User {
       lastName: lastName ?? this.lastName,
       fullName: fullName ?? this.fullName,
       email: email ?? this.email,
-      role: role ?? this.role,
       image: image ?? this.image,
       userDetails: userDetails ?? this.userDetails,
     );
