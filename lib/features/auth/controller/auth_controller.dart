@@ -490,7 +490,7 @@ Future<void> signInWithGoogle() async {
   }
 
 
-  Future<void> updateUserDetails() async {
+  Future<void> updateUserDetails({String? path}) async {
   if (formKey.currentState?.saveAndValidate() ?? false) {
    
     Modal.loading();

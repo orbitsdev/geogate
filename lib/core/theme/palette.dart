@@ -28,5 +28,8 @@ static Color  BG_LIGH_3 = Color(0xFFF2F5F7);
 
     static Color LIGHT_PRIMARY = Color(0xff73A892);
 
+    static Color GREEN1 = Color(0xffE2F1EC);
+    static Color GREEN2 = Color(0xff15A671);
+    static Color GREEN3 = Color(0xff15A671);
 
 }

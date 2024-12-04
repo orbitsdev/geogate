@@ -77,12 +77,16 @@ class UpdateUserDetailsPage extends StatelessWidget {
                       isDate: true,
                     ),
                    const SizedBox(height: 16),
-if (controller.user.value.userDetails?.course?.id != null) // Show course description if course is selected
-  Text(
-    '${controller.user.value.userDetails?.course?.courseDescription ?? ''}',
-    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+if (controller.user.value.userDetails?.course?.id != null) // Show userDetails.course description if course is selected
+  Container(
+    padding: EdgeInsets.symmetric(horizontal: 16,),
+    child: Text(
+      '${controller.user.value.userDetails?.course?.courseDescription ?? ''}',
+      style: const TextStyle(fontSize: 16, ),
+    ),
   ),
-                    GetBuilder<CourseController>(
+  const SizedBox(height: 16),
+                  GetBuilder<CourseController>(
                       builder: (courseController) {
                         if (courseController.isFetchingCourse.value) {
                           return const Center(
