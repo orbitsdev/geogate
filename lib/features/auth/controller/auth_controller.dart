@@ -514,12 +514,10 @@ Future<void> signInWithGoogle() async {
 
           
           update();
-       
+         Get.offAllNamed('/home');
           Modal.success(
             message: 'User details updated successfully',
-            onDismiss: () {
-             Get.offAllNamed('/home');
-            },
+            
           );
         },
       );
