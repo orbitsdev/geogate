@@ -8,21 +8,32 @@ class InCompleteDetailsMiddleware extends GetMiddleware {
    @override
   RouteSettings? redirect(String? route) {
 
-       final AuthController authController = Get.find<AuthController>();
-       
-    final userDetails = authController.user.value.userDetails;
-    if (userDetails == null ||
-        userDetails.firstName == null ||
-        userDetails.lastName == null ||
-        userDetails.fullAddress == null ||
-        userDetails.birthday == null ||
-        userDetails.courseId == null) {
-      // Redirect to the update user details form
-      return const RouteSettings(name: '/update-user-details');
-    }
+// final AuthController authController = Get.find<AuthController>();
 
-    return null; //
-  }
+//     final user = authController.user.value;
+
+//     print('FROM MIDDLEWARE ----------');
+//     print(user.userDetails?.toJson());
+//     print(user.course?.toJson());
+//     print(user.course?.campus?.toJson());
+//     print('FROM MIDDLEWAREsddd ----------');
+
   
+//     if (user.userDetails == null ||
+//         user.userDetails?.firstName == null ||
+//         user.userDetails?.lastName == null ||
+//         user.userDetails?.fullAddress == null ||
+//         user.userDetails?.birthday == null ||
+//         user.course?.id == null) {
+        
+     
+//       // return const RouteSettings(name: '/update-user-details');
+//     }
+
+//     // Return null if no redirection is needed
+//     return null;
+//   }
+return  null;
+  }
   
 }

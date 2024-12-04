@@ -13,7 +13,6 @@ class Campus {
     this.radius,
   });
 
-  // Factory method to create an instance from JSON
   factory Campus.fromJson(Map<String, dynamic> json) {
     return Campus(
       id: json['id'],
@@ -30,7 +29,6 @@ class Campus {
     );
   }
 
-  // Factory method to create an instance from a Map
   factory Campus.fromMap(Map<String, dynamic> map) {
     return Campus(
       id: map['id'],
@@ -47,7 +45,6 @@ class Campus {
     );
   }
 
-  // Convert to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -58,7 +55,6 @@ class Campus {
     };
   }
 
-  // Convert to a Map
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -69,7 +65,6 @@ class Campus {
     };
   }
 
-  // CopyWith method to create a modified instance
   Campus copyWith({
     int? id,
     String? name,
@@ -84,10 +79,5 @@ class Campus {
       longitude: longitude ?? this.longitude,
       radius: radius ?? this.radius,
     );
-  }
-
-  @override
-  String toString() {
-    return 'Campus(id: $id, name: $name, latitude: $latitude, longitude: $longitude, radius: $radius)';
   }
 }

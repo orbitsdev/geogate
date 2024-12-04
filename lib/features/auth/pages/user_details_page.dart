@@ -65,11 +65,11 @@ class UserDetailsPage extends StatelessWidget {
               const Gap(16),
 
               // Course Section
-              if (authController.user.value.course != null)
+              if (authController.user.value.userDetails?.course != null)
                 _buildCourseCard(),
 
               // Campus Section
-              if (authController.user.value.course?.campus != null)
+              if (authController.user.value.userDetails?.course?.campus != null)
                 _buildCampusCard(),
 
               const Gap(24),
@@ -151,7 +151,7 @@ class UserDetailsPage extends StatelessWidget {
 
   // Course Card
   Widget _buildCourseCard() {
-    final course = authController.user.value.course!;
+    final course = authController.user.value.userDetails?.course!;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -167,11 +167,11 @@ class UserDetailsPage extends StatelessWidget {
             ),
             const Gap(8),
             Text(
-              'Course Code: ${course.courseCode ?? ''}',
+              'Course Code: ${course?.courseCode ?? ''}',
               style: Get.textTheme.bodyMedium,
             ),
             Text(
-              'Course Description: ${course.courseDescription ?? ''}',
+              'Course Description: ${course?.courseDescription ?? ''}',
               style: Get.textTheme.bodyMedium,
             ),
           ],
@@ -182,7 +182,7 @@ class UserDetailsPage extends StatelessWidget {
 
   // Campus Card
   Widget _buildCampusCard() {
-    final campus = authController.user.value.course?.campus!;
+    final campus = authController.user.value.userDetails?.course?.campus!;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

@@ -45,109 +45,120 @@ class UpdateUserDetailsPage extends StatelessWidget {
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(16.0),
-          child: FormBuilder(
-            key: authController.formKey,
-            child: Column(
-              children: [
-                const SizedBox(height: 24),
-                _buildTextField(
-                  'First Name',
-                  'first_name',
-                  authController.user.value.userDetails?.firstName ?? '',
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  'Last Name',
-                  'last_name',
-                  authController.user.value.userDetails?.lastName ?? '',
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  'Full Address',
-                  'full_address',
-                  authController.user.value.userDetails?.fullAddress ?? '',
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  'Birthday',
-                  'birthday',
-                  authController.user.value.userDetails?.birthday ?? '',
-                  isDate: true,
-                ),
-                const SizedBox(height: 16),
-                GetBuilder<CourseController>(
-                  builder: (courseController) {
-                    if (courseController.isFetchingCourse.value) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-
-                    if (courseController.availableCourses.isEmpty) {
-                      return Container(
-                        margin: const EdgeInsets.only(top: 10),
-                        child: const Center(
-                          child: Text('No courses available.\nPull down to refresh.'),
-                        ),
-                      );
-                    }
-
-                    return FormBuilderDropdown<int>(
-  name: 'course_id',
-  decoration: InputDecoration(
-    labelText: 'Select Course',
-    filled: true,
-    fillColor: Palette.LIGHT_BACKGROUND,
-    contentPadding: const EdgeInsets.symmetric(
-      vertical: 12,
-      horizontal: 16,
-    ),
-    border: OutlineInputBorder(
-      borderSide: BorderSide.none,
-      borderRadius: BorderRadius.circular(12),
-    ),
+          child: GetBuilder<AuthController>(
+            builder: (controller) {
+              return FormBuilder(
+                key: controller.formKey,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 24),
+                    _buildTextField(
+                      'First Name',
+                      'first_name',
+                      controller.user.value.userDetails?.firstName ?? '',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                      'Last Name',
+                      'last_name',
+                      controller.user.value.userDetails?.lastName ?? '',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                      'Full Address',
+                      'full_address',
+                      controller.user.value.userDetails?.fullAddress ?? '',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                      'Birthday',
+                      'birthday',
+                      controller.user.value.userDetails?.birthday ?? '',
+                      isDate: true,
+                    ),
+                   const SizedBox(height: 16),
+if (controller.user.value.userDetails?.course?.id != null) // Show course description if course is selected
+  Text(
+    '${controller.user.value.userDetails?.course?.courseDescription ?? ''}',
+    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
   ),
-  initialValue: authController.user.value.userDetails?.courseId,
-  validator: FormBuilderValidators.compose([
-    FormBuilderValidators.required(),
-  ]),
-  items: courseController.availableCourses
-      .map(
-        (course) => DropdownMenuItem<int>(
-          value: course.id,
-          child: Text(
-            course.courseDescription ?? '',
-            style: TextStyle(fontSize: 16, color: Colors.black),
-          ),
-        ),
-      )
-      .toList(),
-  selectedItemBuilder: (BuildContext context) {
-    return courseController.availableCourses
-        .map(
-          (course) => Container(
-            alignment: Alignment.centerLeft,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
+                    GetBuilder<CourseController>(
+                      builder: (courseController) {
+                        if (courseController.isFetchingCourse.value) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+              
+                        if (courseController.availableCourses.isEmpty) {
+                          return Container(
+                            margin: const EdgeInsets.only(top: 10),
+                            child: const Center(
+                              child: Text('No courses available.\nPull down to refresh.'),
+                            ),
+                          );
+                        }
+              
+                        
+              
+                        return FormBuilderDropdown<int>(
+                name: 'course_id',
+                decoration: InputDecoration(
+                  labelText: 'Select Course',
+                  filled: true,
+                  fillColor: Palette.LIGHT_BACKGROUND,
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                initialValue: controller.user.value.userDetails?.course?.id,
+                validator: FormBuilderValidators.compose([
+                  FormBuilderValidators.required(),
+                ]),
+                items: courseController.availableCourses
+                    .map(
+                      (course) => DropdownMenuItem<int>(
+              value: course.id,
               child: Text(
                 course.courseDescription ?? '',
-                style: const TextStyle(
-                  fontSize: 14,
+                style: TextStyle(fontSize: 16, color: Colors.black),
+              ),
+                      ),
+                    )
+                    .toList(),
+                selectedItemBuilder: (BuildContext context) {
+                  return courseController.availableCourses
+                      .map(
+              (course) => Container(
+                alignment: Alignment.centerLeft,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Text(
+                    course.courseDescription ?? '',
+                    style: const TextStyle(
+                      fontSize: 14,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-        )
-        .toList();
-  },
-);
-
-
-                  },
+                      )
+                      .toList();
+                },
+              );
+              
+              
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                 ),
-                const SizedBox(height: 16),
-              ],
-            ),
+              );
+            }
           ),
         ),
       ),

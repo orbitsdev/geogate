@@ -1,3 +1,5 @@
+import 'package:geogate/features/course/model/course.dart';
+
 class UserDetails {
   final int? id;
   final int? userId;
@@ -6,7 +8,7 @@ class UserDetails {
   final String? fullAddress;
   final String? fullName;
   final String? birthday;
-  final int? courseId;
+  final Course? course;
 
   UserDetails({
     this.id,
@@ -16,7 +18,7 @@ class UserDetails {
     this.fullAddress,
     this.fullName,
     this.birthday,
-    this.courseId,
+    this.course,
   });
 
   factory UserDetails.fromJson(Map<String, dynamic> json) {
@@ -28,7 +30,20 @@ class UserDetails {
       fullAddress: json['full_address'],
       fullName: json['fullname'],
       birthday: json['birthday'],
-      courseId: json['course_id'],
+      course: json['course'] != null ? Course.fromJson(json['course']) : null,
+    );
+  }
+
+  factory UserDetails.fromMap(Map<String, dynamic> map) {
+    return UserDetails(
+      id: map['id'],
+      userId: map['user_id'],
+      firstName: map['first_name'],
+      lastName: map['last_name'],
+      fullAddress: map['full_address'],
+      fullName: map['fullname'],
+      birthday: map['birthday'],
+      course: map['course'] != null ? Course.fromMap(map['course']) : null,
     );
   }
 
@@ -39,9 +54,22 @@ class UserDetails {
       'first_name': firstName,
       'last_name': lastName,
       'full_address': fullAddress,
-      'fullname': firstName,
+      'fullname': fullName,
       'birthday': birthday,
-      'course_id': courseId,
+      'course': course?.toJson(),
+    };
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'user_id': userId,
+      'first_name': firstName,
+      'last_name': lastName,
+      'full_address': fullAddress,
+      'fullname': fullName,
+      'birthday': birthday,
+      'course': course?.toMap(),
     };
   }
 
@@ -53,7 +81,7 @@ class UserDetails {
     String? fullAddress,
     String? fullName,
     String? birthday,
-    int? courseId,
+    Course? course,
   }) {
     return UserDetails(
       id: id ?? this.id,
@@ -63,12 +91,7 @@ class UserDetails {
       fullAddress: fullAddress ?? this.fullAddress,
       fullName: fullName ?? this.fullName,
       birthday: birthday ?? this.birthday,
-      courseId: courseId ?? this.courseId,
+      course: course ?? this.course,
     );
-  }
-
-  @override
-  String toString() {
-    return 'UserDetails(id: $id, userId: $userId, firstName: $firstName, lastName: $lastName, fullAddress: $fullAddress, fullName: $fullName, birthday: $birthday, courseId: $courseId)';
   }
 }

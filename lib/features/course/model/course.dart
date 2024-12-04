@@ -22,12 +22,30 @@ class Course {
     );
   }
 
+  factory Course.fromMap(Map<String, dynamic> map) {
+    return Course(
+      id: map['id'],
+      courseCode: map['course_code'],
+      courseDescription: map['course_description'],
+      campus: map['campus'] != null ? Campus.fromMap(map['campus']) : null,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'course_code': courseCode,
       'course_description': courseDescription,
       'campus': campus?.toJson(),
+    };
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'course_code': courseCode,
+      'course_description': courseDescription,
+      'campus': campus?.toMap(),
     };
   }
 
@@ -43,10 +61,5 @@ class Course {
       courseDescription: courseDescription ?? this.courseDescription,
       campus: campus ?? this.campus,
     );
-  }
-
-  @override
-  String toString() {
-    return 'Course(id: $id, courseCode: $courseCode, courseDescription: $courseDescription, campus: $campus)';
   }
 }

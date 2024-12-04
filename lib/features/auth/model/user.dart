@@ -1,4 +1,3 @@
-import 'package:geogate/features/course/model/course.dart';
 import 'package:geogate/features/auth/model/user_details.dart';
 
 class User {
@@ -7,9 +6,9 @@ class User {
   final String? lastName;
   final String? fullName;
   final String? email;
+  final String? role;
   final String? image;
   final UserDetails? userDetails;
-  final Course? course;
 
   User({
     this.id,
@@ -17,9 +16,9 @@ class User {
     this.lastName,
     this.fullName,
     this.email,
+    this.role,
     this.image,
     this.userDetails,
-    this.course,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -29,11 +28,26 @@ class User {
       lastName: json['last_name'],
       fullName: json['full_name'],
       email: json['email'],
+      role: json['role'],
       image: json['image'],
       userDetails: json['user_details'] != null
           ? UserDetails.fromJson(json['user_details'])
           : null,
-      course: json['course'] != null ? Course.fromJson(json['course']) : null,
+    );
+  }
+
+  factory User.fromMap(Map<String, dynamic> map) {
+    return User(
+      id: map['id'],
+      firstName: map['first_name'],
+      lastName: map['last_name'],
+      fullName: map['full_name'],
+      email: map['email'],
+      role: map['role'],
+      image: map['image'],
+      userDetails: map['user_details'] != null
+          ? UserDetails.fromMap(map['user_details'])
+          : null,
     );
   }
 
@@ -44,9 +58,22 @@ class User {
       'last_name': lastName,
       'full_name': fullName,
       'email': email,
+      'role': role,
       'image': image,
       'user_details': userDetails?.toJson(),
-      'course': course?.toJson(),
+    };
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'first_name': firstName,
+      'last_name': lastName,
+      'full_name': fullName,
+      'email': email,
+      'role': role,
+      'image': image,
+      'user_details': userDetails?.toMap(),
     };
   }
 
@@ -56,9 +83,9 @@ class User {
     String? lastName,
     String? fullName,
     String? email,
+    String? role,
     String? image,
     UserDetails? userDetails,
-    Course? course,
   }) {
     return User(
       id: id ?? this.id,
@@ -66,14 +93,9 @@ class User {
       lastName: lastName ?? this.lastName,
       fullName: fullName ?? this.fullName,
       email: email ?? this.email,
+      role: role ?? this.role,
       image: image ?? this.image,
       userDetails: userDetails ?? this.userDetails,
-      course: course ?? this.course,
     );
-  }
-
-  @override
-  String toString() {
-    return 'User(id: $id, firstName: $firstName, lastName: $lastName, fullName: $fullName, email: $email, image: $image, userDetails: $userDetails, course: $course)';
   }
 }

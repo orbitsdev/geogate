@@ -13,6 +13,7 @@ import 'package:geogate/core/shared/widgets/local_lottie_image.dart';
 import 'package:geogate/core/shared/widgets/logout_loading.dart';
 import 'package:geogate/core/theme/palette.dart';
 import 'package:geogate/features/auth/model/user.dart';
+import 'package:geogate/features/home_page.dart';
 
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -197,10 +198,10 @@ Future<void> updateProfile() async {
           // print('------------TOKEN-------------');
           // print('${token.value}');
           // print('--------------------------------------');
-          print('------------USER DETAILS--------------------');
-            print(token.value);
-            print(user.toJson());
-          print('--------------------------------------');
+          // print('------------USER DETAILS--------------------');
+          //   print(token.value);
+          //   print(user.toJson());
+          // print('--------------------------------------');
         }
       }
     } catch (e) {
@@ -285,52 +286,67 @@ Future<void> updateProfile() async {
 
     print('User details updated locally with selected fields.');
   }
+Future<bool> fetchAndUpdateUserDetails({bool showModal = true}) async {
+  if (token.value.isNotEmpty) {
+    final response = await ApiService.getAuthenticatedResource('user');
 
-  Future<bool> fetchAndUpdateUserDetails({bool showModal = true}) async {
-    if (token.value.isNotEmpty) {
-      final response = await ApiService.getAuthenticatedResource('user');
+    return response.fold(
+      (failure) {
+        // Handle errors that are not related to unauthorized access (401)
+        if (failure.statusCode != 401 && showModal) {
+          Modal.error(
+            content: Text(failure.message ?? 'Something went wrong.'),
+            visualContent: LocalLottieImage(
+              path: lottiesPath('error.json'),
+              repeat: false,
+            ),
+          );
+        }
+        return false; // Return false indicating failure
+      },
+      (success) async {
+        print('----------ORIGINAL USER DETAILS----------');
+        print('User Data: ${success.data['data']}');
+        print('Course: ${success.data['data']['user_details']['course']}');
+        print('Campus: ${success.data['data']['user_details']['course']['campus']}');
+        print('------------------------------------------');
 
-      return response.fold(
-        (failure) {
-          if (failure.statusCode != 401) {
-            Modal.error(
-              content: Text(failure.message ?? 'Something went wrong.'),
-              visualContent: LocalLottieImage(
-                path: lottiesPath('error.json'),
-                repeat: false,
-              ),
-            );
-          }
+        // Parse the fetched user details
+        final updatedUser = User.fromJson(success.data['data']);
 
-          return false; // Return false indicating failure
-        },
-        (success) async {
-          final updatedUser = User.fromJson(success.data['data']);
+        print('Local stored user: ${user.value.toJson()}');
 
-          // print('Local stored user: ${user.value.toJson()}');
+        // Check if the updated user is different from the locally stored user
+        if (updatedUser != user.value) {
+          print('User details are different. Updating local user...');
 
-          if (updatedUser != user.value) {
-            print('User details are different. Updating local user...');
+          // Update the user and save it to SecureStorage
+          user(updatedUser);
+          update();
 
-            // Update the user and save it to SecureStorage
-            user(updatedUser);
+          await SecureStorage().writeSecureData(
+            'user',
+            jsonEncode(updatedUser.toJson()),
+          );
 
-            await SecureStorage().writeSecureData(
-              'user',
-              jsonEncode(updatedUser.toJson()),
-            );
-              print(user.toJson());
-            print('User details updated locally.');
-          } else {
-            print('No updates in user details.');
-          }
+          print('---------- UPDATED USER DETAILS ----------');
+          print('Updated User: ${user.value.toJson()}');
+          print('Course: ${user.value.userDetails?.course?.toJson()}');
+          print('Campus: ${user.value.userDetails?.course?.campus?.toJson()}');
+          print('------------------------------------------');
+        } else {
+          print('No updates in user details.');
+        }
 
-          return true; // Return true indicating success
-        },
-      );
-    }
-    return false; // Return false if token is empty
+        return true; // Return true indicating success
+      },
+    );
   }
+
+  // Return false if the token is empty
+  return false;
+}
+
 
   Future<void> updateDeviceToken() async {
     if (AuthController.controller.user.value.id != null) {
@@ -484,6 +500,9 @@ Future<void> signInWithGoogle() async {
   
       var payload = Map<String, dynamic>.from(formValues);
 
+      print('-------------------Data');
+      print(payload);
+
  
       var response = await ApiService.putAuthenticatedResource(
         'user/details',
@@ -502,23 +521,33 @@ Future<void> signInWithGoogle() async {
           );
         },
         (success) async {
-      
+
+          print(success.data);
+       
           final updatedUser = User.fromJson(success.data['data']);
 
        
           user(updatedUser);
+          update();
+
+          // print(user.toJson());
+            await SecureStorage().writeSecureData('user', jsonEncode(success.data['data']));
           await SecureStorage().writeSecureData(
             'user',
             jsonEncode(updatedUser.toJson()),
           );
 
+
+          print('--------------');
+          // print(user.value.course?.toJson());
           
-          update();
-         Get.offAllNamed('/home');
-          Modal.success(
+          Get.off(()=> HomePage(), );
+             Modal.success(
             message: 'User details updated successfully',
             
           );
+        //  Get.offAllNamed('/home-main');
+       
         },
       );
   }

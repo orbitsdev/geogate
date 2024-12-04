@@ -34,6 +34,8 @@ Future<void> main() async  {
     print(e.toString());
     Modal.showToast(msg: e.toString());
    });
+
+   
     await AuthController.controller.loadTokenAndUser(showModal: false);
    ModalController.controller.setDialog(false);
     runApp(const GeoGateApp());
@@ -111,8 +113,8 @@ class _GeoGateAppState extends State<GeoGateApp>  with WidgetsBindingObserver {
        
       
         GetPage(name: '/login', page: () => LoginPage(), middlewares:[GuestMiddleware()]),
-        GetPage(name: '/home-main', page: () => HomePage(), middlewares: [AuthMiddleware(),InCompleteDetailsMiddleware()]),
-        GetPage(name: '/update-user-details', page: () => UpdateUserDetailsPage(), middlewares: [AuthMiddleware(),CompleteDetailsMiddleware()]),
+        GetPage(name: '/home-main', page: () => HomePage(), middlewares: [AuthMiddleware(),CompleteDetailsMiddleware()]),
+        GetPage(name: '/update-user-details', page: () => UpdateUserDetailsPage(), middlewares: [AuthMiddleware()]),
 
       ],
     );
