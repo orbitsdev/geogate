@@ -21,4 +21,12 @@ static Color  SHIMMER3 = Color(0xffF7F7F7);
 
 static Color BG_DARK = Color(0xFF1C404B);
 static Color  BG_LIGH_3 = Color(0xFFF2F5F7);
+
+    static Color LIGHT_BACKGROUND = Color(0xffF2F2F2); 
+       static Color RED = Color(0xffFF0000);
+
+
+    static Color LIGHT_PRIMARY = Color(0xff73A892);
+
+
 }

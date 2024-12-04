@@ -4,6 +4,7 @@ class UserDetails {
   final String? firstName;
   final String? lastName;
   final String? fullAddress;
+  final String? fullName;
   final String? birthday;
   final int? courseId;
 
@@ -13,6 +14,7 @@ class UserDetails {
     this.firstName,
     this.lastName,
     this.fullAddress,
+    this.fullName,
     this.birthday,
     this.courseId,
   });
@@ -24,6 +26,7 @@ class UserDetails {
       firstName: json['first_name'],
       lastName: json['last_name'],
       fullAddress: json['full_address'],
+      fullName: json['fullname'],
       birthday: json['birthday'],
       courseId: json['course_id'],
     );
@@ -36,6 +39,7 @@ class UserDetails {
       'first_name': firstName,
       'last_name': lastName,
       'full_address': fullAddress,
+      'fullname': firstName,
       'birthday': birthday,
       'course_id': courseId,
     };
@@ -47,6 +51,7 @@ class UserDetails {
     String? firstName,
     String? lastName,
     String? fullAddress,
+    String? fullName,
     String? birthday,
     int? courseId,
   }) {
@@ -56,6 +61,7 @@ class UserDetails {
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       fullAddress: fullAddress ?? this.fullAddress,
+      fullName: fullName ?? this.fullName,
       birthday: birthday ?? this.birthday,
       courseId: courseId ?? this.courseId,
     );
@@ -63,6 +69,6 @@ class UserDetails {
 
   @override
   String toString() {
-    return 'UserDetails(id: $id, userId: $userId, firstName: $firstName, lastName: $lastName, fullAddress: $fullAddress, birthday: $birthday, courseId: $courseId)';
+    return 'UserDetails(id: $id, userId: $userId, firstName: $firstName, lastName: $lastName, fullAddress: $fullAddress, fullName: $fullName, birthday: $birthday, courseId: $courseId)';
   }
 }

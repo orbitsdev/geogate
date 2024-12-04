@@ -6,10 +6,14 @@ import 'package:geogate/core/services/firebase_service.dart';
 import 'package:geogate/core/services/notificaiton_service.dart';
 import 'package:geogate/core/shared/controller/modal_controller.dart';
 import 'package:geogate/core/shared/modal/modal.dart';
+import 'package:geogate/core/theme/app_theme.dart';
 import 'package:geogate/features/auth/controller/auth_controller.dart';
 import 'package:geogate/features/auth/middleware/auth_middleware.dart';
+import 'package:geogate/features/auth/middleware/complete_details_middleware.dart';
 import 'package:geogate/features/auth/middleware/guest_middleware.dart';
+import 'package:geogate/features/auth/middleware/in_complete_details_middleware.dart';
 import 'package:geogate/features/auth/pages/login_page.dart';
+import 'package:geogate/features/auth/pages/update_user_details.dart';
 import 'package:geogate/features/home_page.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -100,13 +104,15 @@ class _GeoGateAppState extends State<GeoGateApp>  with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+       theme: AppTheme.UI,
       debugShowCheckedModeBanner: false,
       initialRoute: '/login', 
       getPages: [
        
       
         GetPage(name: '/login', page: () => LoginPage(), middlewares:[GuestMiddleware()]),
-        GetPage(name: '/home-main', page: () => HomePage(), middlewares: [AuthMiddleware(),]),
+        GetPage(name: '/home-main', page: () => HomePage(), middlewares: [AuthMiddleware(),InCompleteDetailsMiddleware()]),
+        GetPage(name: '/update-user-details', page: () => UpdateUserDetailsPage(), middlewares: [AuthMiddleware(),CompleteDetailsMiddleware()]),
 
       ],
     );

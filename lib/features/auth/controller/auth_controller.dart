@@ -252,56 +252,10 @@ Future<void> updateProfile() async {
   Future<void> clearLocalData() async {
     await SecureStorage().deleteSecureData('token');
     await SecureStorage().deleteSecureData('user');
-    user.value = User(); // Clear user data in-memory
-    token.value = ''; // Clear token in-memory
+    user.value = User(); 
+    token.value = ''; 
   }
 
-  // Logout function that returns a bool (true for success, false for failure)
-  Future<bool> logout() async {
-    Modal.loading(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
-      content: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(width: 24),
-          CircularProgressIndicator(),
-          SizedBox(width: 36),
-          Text(
-            "Logging out...",
-            style: Get.textTheme.titleMedium,
-          ),
-        ],
-      ),
-    );
-
-    // Call the logout API
-    final response = await ApiService.postAuthenticatedResource('logout', {});
-
-    // Close the loading modal
-    Get.back();
-
-    // Handle success or failure response
-    return response.fold(
-      (failure) async {
-
-       
-        await clearLocalData();
-        Modal.error(
-          content: Text(failure.message ?? 'Logout failed.'),
-          visualContent: failure.icon,
-        );
-        return false; // Return false indicating failure
-      },
-      (success) async {
-        // Clear local data on successful logout
-        await clearLocalData();
-
-        // Redirect to login page after successful logout
-        Get.offAllNamed('/login');
-        return true; // Return true indicating success
-      },
-    );
-  }
 
   Future<void> fetchUserFromStorage() async {
     String? userJson = await SecureStorage().readSecureData('user');
@@ -365,7 +319,7 @@ Future<void> updateProfile() async {
               'user',
               jsonEncode(updatedUser.toJson()),
             );
-
+              print(user.toJson());
             print('User details updated locally.');
           } else {
             print('No updates in user details.');
@@ -393,11 +347,57 @@ Future<void> updateProfile() async {
       response.fold((failure) {
         Modal.showToast(msg: failure.message);
       }, (success) {
-        print('device registered');
+         print('device registered');
       });
     }
 
     //  print(updateDeviceToken);
+  }
+
+  Future<bool> logout() async {
+    Modal.loading(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          SizedBox(width: 24),
+          CircularProgressIndicator(),
+          SizedBox(width: 36),
+          Text(
+            "Logging out...",
+            style: Get.textTheme.titleMedium,
+          ),
+        ],
+      ),
+    );
+
+ 
+    final response = await ApiService.postAuthenticatedResource('logout', {});
+
+
+    Get.back();
+
+    
+    return response.fold(
+      (failure) async {
+
+       
+        await clearLocalData();
+        Modal.error(
+          content: Text(failure.message ?? 'Logout failed.'),
+          visualContent: failure.icon,
+        );
+        return false; 
+      },
+      (success) async {
+
+        await clearLocalData();
+
+ 
+        Get.offAllNamed('/login');
+        return true; 
+      },
+    );
   }
 
   Future<void> localLogout({Failure? failure}) async {
@@ -474,7 +474,57 @@ Future<void> signInWithGoogle() async {
   }
 
 
+  Future<void> updateUserDetails() async {
+  if (formKey.currentState?.saveAndValidate() ?? false) {
+   
+    Modal.loading();
+
+    var formValues = formKey.currentState!.value;
+
   
+      var payload = Map<String, dynamic>.from(formValues);
+
+ 
+      var response = await ApiService.putAuthenticatedResource(
+        'user/details',
+        payload,
+      );
+
+    
+      Get.back();
+
+     
+      response.fold(
+        (failure) {
+          Modal.errorDialog(
+            message: 'Failed to update user details',
+            failure: failure,
+          );
+        },
+        (success) async {
+      
+          final updatedUser = User.fromJson(success.data['data']);
+
+       
+          user(updatedUser);
+          await SecureStorage().writeSecureData(
+            'user',
+            jsonEncode(updatedUser.toJson()),
+          );
+
+          
+          update();
+       
+          Modal.success(
+            message: 'User details updated successfully',
+            onDismiss: () {
+             Get.offAllNamed('/home');
+            },
+          );
+        },
+      );
+  }
+}
 
 
 

@@ -1,4 +1,4 @@
-import 'package:geogate/features/auth/model/course.dart';
+import 'package:geogate/features/course/model/course.dart';
 import 'package:geogate/features/auth/model/user_details.dart';
 
 class User {

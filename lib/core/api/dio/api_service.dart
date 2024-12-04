@@ -125,32 +125,31 @@ class ApiService {
       return left(ErrorHandler.handleDio(e));
     }
   }
-
-  // Global interceptor for handling 401 Unauthorized errors
-  static Interceptor _getInterceptor() {
-    return InterceptorsWrapper(
-      onError: (DioException e, ErrorInterceptorHandler handler) async {
-
-        if (e.response?.statusCode == 401) {
-
-           String? savedToken = await SecureStorage().readSecureData('token');
-          // Token expired or session unauthorized
+static Interceptor _getInterceptor() {
+  return InterceptorsWrapper(
+    onError: (DioException e, ErrorInterceptorHandler handler) async {
+      if (e.response?.statusCode == 401) {
+        String? savedToken = await SecureStorage().readSecureData('token');
         
-         
-          Failure failure = Failure(exception: e);
-          if(savedToken != null){
-           print('! =  bnull');
-           print(savedToken);
-          AuthController.controller.localLogout(failure:failure ); // Call the logout function
-
-          }else{
-            print('null');
-          }
+        if (savedToken != null) {
+          print('Token is not null. Logging out...');
+          await AuthController.controller.localLogout(
+            failure: Failure(exception: e, message: 'Session expired.'),
+          );
+        } else {
+          print('No token found. User is already logged out.');
         }
-        return handler.next(e); // Continue with error handling
-      },
-    );
-  }
+
+        // Prevent further handling of the error
+        return;
+      }
+
+      // Continue with the next error handler for other errors
+      return handler.next(e);
+    },
+  );
+}
+
 
 static Future<EitherModel<D.Response>> filePostAuthenticatedResource(
     String endpoint,
