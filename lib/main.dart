@@ -12,8 +12,10 @@ import 'package:geogate/features/auth/middleware/auth_middleware.dart';
 import 'package:geogate/features/auth/middleware/complete_details_middleware.dart';
 import 'package:geogate/features/auth/middleware/guest_middleware.dart';
 import 'package:geogate/features/auth/middleware/in_complete_details_middleware.dart';
+import 'package:geogate/features/auth/model/user_details.dart';
 import 'package:geogate/features/auth/pages/login_page.dart';
 import 'package:geogate/features/auth/pages/update_user_details.dart';
+import 'package:geogate/features/auth/pages/user_details_page.dart';
 import 'package:geogate/features/home_page.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -115,6 +117,7 @@ class _GeoGateAppState extends State<GeoGateApp>  with WidgetsBindingObserver {
         GetPage(name: '/login', page: () => LoginPage(), middlewares:[GuestMiddleware()]),
         GetPage(name: '/home-main', page: () => HomePage(), middlewares: [AuthMiddleware(),CompleteDetailsMiddleware()]),
         GetPage(name: '/update-user-details', page: () => UpdateUserDetailsPage(), middlewares: [AuthMiddleware()]),
+        GetPage(name: '/user-details', page: () => UserDetailsPage(), middlewares: [AuthMiddleware()]),
 
       ],
     );
