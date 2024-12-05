@@ -46,7 +46,7 @@ class NotificationsService {
       NotificationResponse details) {
     if (details.payload != null) {
       Map<String, dynamic> data = jsonDecode(details.payload as String);
-      if (data['notification_type'] == 'order_notification') {
+      if (data['notification_type'] == 'absent_notification') {
         // MyOrderController.controller  .goToOrderDetailsScreenFromNotification(data);
       }
     }
@@ -65,19 +65,17 @@ class NotificationsService {
     print('--------------');
     print('BAckground');
     print('--------------');
-    // Get.put(NotificationController());
-    // if (message.data['notification_type'] == 'order_notification') {
-    //   if (message.data['notification_type'] == 'order_notification') {
-    //     NotificationController.controller.loadNotificationsWithoutContext();
-    //   }
-    // }
+    Get.put(NotificationController());
+    if (message.data['notification_type'] == 'absent_notification') {
+      
+    }
   }
 
   static void handleForground(RemoteMessage message) {
     
     if (message.data['notification'] == 'task') {
       print('task forground');
-       NotificationController.controller.loadNotifications();
+      //  NotificationController.controller.loadNotifications();
     }
 
     NotificationsService.showNotificationWithLongContent(
@@ -146,7 +144,7 @@ class NotificationsService {
 
     AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      "channel_id_10",
+      "channel_id_11",
       "geolocation",
       importance: Importance.max,
       priority: Priority.high,
@@ -169,87 +167,114 @@ class NotificationsService {
       payload: jsonEncode(data),
     );
   }
+static Future<void> showNotificationWithLogo({
+  required String title,
+  required String body,
+  required String assetPath, // Path to the logo asset
+  Map<String, dynamic>? data,
+}) async {
+  try {
+    // Load the logo from assets
+    final ByteData bytes = await rootBundle.load(assetPath);
+    final Uint8List byteArray = bytes.buffer.asUint8List();
 
-  static Future<void> showNotificationWithImage({
-    String? title,
-    String? body,
-    Map<String, dynamic>? data,
-  }) async {
-    // final ByteData largeIconBytes =
-    //     await rootBundle.load('assets/images/avante_logo.png');
-    // final Uint8List largeIconByteArray = largeIconBytes.buffer.asUint8List();
+    // Save the logo to a temporary file
+    final Directory directory = await getApplicationDocumentsDirectory();
+    final String filePath = '${directory.path}/logo_icon.png';
+    final File file = File(filePath);
+    await file.writeAsBytes(byteArray);
 
-    // final ByteData bigPictureBytes =
-    //     await rootBundle.load(samplePath('p5.jpg'));
-    // final Uint8List bigPictureByteArray = bigPictureBytes.buffer.asUint8List();
-
-    // final largeIcon = ByteArrayAndroidBitmap(largeIconByteArray);
-    // final bigPicture = ByteArrayAndroidBitmap(bigPictureByteArray);
-
-    // Use BigPictureStyleInformation for a large image on the left
-    // BigPictureStyleInformation bigPictureStyleInformation =
-    //     BigPictureStyleInformation(
-    //   bigPicture,
-    //   largeIcon: largeIcon,
-    //   contentTitle: title,
-    //   summaryText: body,
-    //   htmlFormatContent: true,
-    //   htmlFormatContentTitle: true,
-    //   htmlFormatSummaryText: true,
-    // );
-
-    AndroidNotificationDetails androidNotificationDetails =
+    // Define Android notification details with the logo as a large icon
+    final AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      "channel_id_10",
-      "channel with image",
+      'logo_notification_channel', // Channel ID
+      'Logo Notifications', // Channel Name
+      channelDescription: 'Notifications with a logo as the large icon', // Description
       importance: Importance.max,
       priority: Priority.high,
       playSound: true,
-      sound: RawResourceAndroidNotificationSound('notification'),
-      icon: '@mipmap/ic_launcher', // This is the small icon
-      // styleInformation: bigPictureStyleInformation, // Set the style information
-      actions: <AndroidNotificationAction>[],
+      largeIcon: FilePathAndroidBitmap(filePath), // Set the logo as the large icon
+      icon: '@mipmap/ic_launcher', // Small notification icon
     );
 
-    NotificationDetails notificationDetails = NotificationDetails(
+    // Platform-specific notification details
+    final NotificationDetails notificationDetails = NotificationDetails(
       android: androidNotificationDetails,
     );
 
+    // Display the notification
     await _flutterLocalNotificationsPlugin.show(
-      0,
-      title,
-      body,
-      notificationDetails,
-      payload: data.toString(),
+      0, // Notification ID
+      title, // Notification title
+      body, // Notification body
+      notificationDetails, // Notification details
+      payload: data != null ? jsonEncode(data) : null, // Optional payload
     );
+  } catch (e) {
+    debugPrint('Error showing notification with logo: $e');
   }
+}
 
-  // static showScheduleNotification({
-  //   String? title,
-  //   String? body,
-  //   Map<String, dynamic>? data,
-  // }) async {
-  //   final bigPicture = await DownloadUtil.downloadAndSaveFile(
-  //       "https://images.unsplash.com/photo-1624948465027-6f9b51067557?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
-  //       "drinkwater");
-  //   AndroidNotificationDetails androidNotificationDetails =
-  //       AndroidNotificationDetails('notification', 'your channel name',
-  //           channelDescription: 'your channel description',
-  //           importance: Importance.max,
-  //           priority: Priority.high,
-  //           largeIcon: const DrawableResourceAndroidBitmap('justwater'),
-  //           styleInformation: BigPictureStyleInformation(
-  //             FilePathAndroidBitmap(bigPicture),
-  //             hideExpandedLargeIcon: false,
-  //           ),
-  //           ticker: 'ticker');
-  //   NotificationDetails notificationDetails = NotificationDetails(
-  //     android: androidNotificationDetails,
-  //   );
-  //   await _flutterLocalNotificationsPlugin.periodicallyShow(
-  //       1, title, body, RepeatInterval.everyMinute, notificationDetails,
-  //       payload: data.toString());
-  // }
+  static Future<void> showNotificationWithAssetImage({
+  required String title,
+  required String body,
+  required String assetPath, // Path to the asset image
+  Map<String, dynamic>? data,
+}) async {
+  try {
+    // Load the image from assets
+    final ByteData bytes = await rootBundle.load(assetPath);
+    final Uint8List byteArray = bytes.buffer.asUint8List();
+
+    // Save the image to a temporary file
+    final Directory directory = await getApplicationDocumentsDirectory();
+    final String filePath = '${directory.path}/asset_image.png';
+    final File file = File(filePath);
+    await file.writeAsBytes(byteArray);
+
+    // Create the Big Picture style information
+    final BigPictureStyleInformation bigPictureStyleInformation =
+        BigPictureStyleInformation(
+      FilePathAndroidBitmap(filePath), // Use the saved image as the big picture
+      largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'), // Optional large icon
+      contentTitle: title,
+      summaryText: body,
+      htmlFormatContent: true,
+      htmlFormatContentTitle: true,
+      htmlFormatSummaryText: true,
+    );
+
+    // Define Android notification details
+    final AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+      'asset_image_channel', // Channel ID
+      'Asset Image Notifications', // Channel Name
+      channelDescription: 'Notifications with images from assets', // Description
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: true,
+      styleInformation: bigPictureStyleInformation, // Attach the style information
+      icon: '@mipmap/ic_launcher', // Notification icon
+    );
+
+    // Platform-specific notification details
+    final NotificationDetails notificationDetails = NotificationDetails(
+      android: androidNotificationDetails,
+    );
+
+    // Display the notification
+    await _flutterLocalNotificationsPlugin.show(
+      0, // Notification ID
+      title, // Notification title
+      body, // Notification body
+      notificationDetails, // Notification details
+      payload: data != null ? jsonEncode(data) : null, // Optional payload
+    );
+  } catch (e) {
+    debugPrint('Error showing notification with asset image: $e');
+  }
+}
+
 
   static Future<String> _downloadAndSaveImage(
       String url, String fileName) async {
@@ -293,7 +318,42 @@ class NotificationsService {
     return token;
   }
 
+  static Future<void> showNotification({
+  required String title,
+  required String body,
+  String? payload, // Optional payload to pass with notification
+}) async {
+  try {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+      'default_channel_id', // Channel ID
+      'Default Channel', // Channel name
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: true,
+      icon: '@mipmap/ic_launcher', // Small icon
+    );
+
+    const NotificationDetails platformDetails = NotificationDetails(
+      android: androidDetails,
+    );
+
+    // Correct the reference to the static variable
+    await NotificationsService._flutterLocalNotificationsPlugin.show(
+      0, // Notification ID
+      title, // Notification title
+      body, // Notification body
+      platformDetails,
+      payload: payload, // Optional payload
+    );
+  } catch (e) {
+    print("Error showing notification: $e");
+  }
 }
+
+}
+
+
 
 
 
@@ -306,4 +366,9 @@ class DownloadUtil {
     await file.writeAsBytes(response.bodyBytes);
     return filePath;
   }
+
+  
+
+  
+
 } 

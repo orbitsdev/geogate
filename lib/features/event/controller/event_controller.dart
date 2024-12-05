@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:geogate/core/api/dio/api_service.dart';
 import 'package:geogate/core/helpers/logger.dart';
+import 'package:geogate/core/services/notificaiton_service.dart';
 import 'package:geogate/core/shared/modal/modal.dart';
 import 'package:geogate/features/auth/controller/auth_controller.dart';
 import 'package:geogate/features/event/model/event.dart';
@@ -29,6 +30,13 @@ CameraPosition? cameraPosition = CameraPosition(
 
   // Fetch active event from API
   Future<void> getActiveEvent() async {
+    await NotificationsService.showNotificationWithLogo(
+  title: 'Welcome!',
+  body: 'Thank you for joining our app!',
+  assetPath: 'assets/images/logo.png', // Correct path to your asset
+  data: {'type': 'welcome', 'id': 123},
+);
+
     var logger = Logger();
 
 
@@ -41,7 +49,7 @@ CameraPosition? cameraPosition = CameraPosition(
         Modal.errorDialog(failure: failure);
       },
       (success) {
-        logger.d("${success.data['data']['active_schedule']}");
+        // logger.d("${success.data['data']['active_schedule']}");
      
         isLoading.value = false;
         // print('Active Event Data: ${success.data['data']}');

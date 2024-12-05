@@ -13,6 +13,7 @@ import 'package:geogate/core/shared/widgets/local_lottie_image.dart';
 import 'package:geogate/core/shared/widgets/logout_loading.dart';
 import 'package:geogate/core/theme/palette.dart';
 import 'package:geogate/features/auth/model/user.dart';
+import 'package:geogate/features/event/controller/event_controller.dart';
 import 'package:geogate/features/home_page.dart';
 
 import 'package:get/get.dart';
