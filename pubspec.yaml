@@ -71,9 +71,7 @@ dependencies:
   qr_flutter: ^4.1.0
   logger: ^2.5.0
   connectivity_plus: ^6.1.0
-  workmanager: ^0.5.2
-  flutter_foreground_task: ^8.17.0
-  flutter_background_geolocation: ^4.16.5
+
 
 dev_dependencies:
   flutter_test:

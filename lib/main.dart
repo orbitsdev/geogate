@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:geogate/core/binding/app_binding.dart';
 import 'package:geogate/core/services/firebase_service.dart';
 import 'package:geogate/core/services/local_task_handler.dart';
@@ -23,7 +22,6 @@ import 'package:geogate/features/monitor/controller/monitoring_controller.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:workmanager/workmanager.dart';
 
 // void callbackDispatcher() {
 //   Workmanager().executeTask((task, inputData) async {
@@ -83,25 +81,6 @@ Future<void> main() async {
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-//     FlutterForegroundTask.init(
-//   androidNotificationOptions: AndroidNotificationOptions(
-//     channelId: 'location_tracking',
-//     channelName: 'Location Tracking',
-//     channelDescription: 'Tracks location in the background.',
-//     channelImportance: NotificationChannelImportance.HIGH,
-//     priority: NotificationPriority.HIGH,
-//   ),
-//   iosNotificationOptions: const IOSNotificationOptions(
-//     showNotification: true,
-//     playSound: false,
-//   ),
-//   foregroundTaskOptions:  ForegroundTaskOptions(
-//     eventAction: ForegroundTaskEventAction.repeat(5000), // Execute callback every 5 seconds
-//     autoRunOnBoot: true, // Restart service after reboot
-//     allowWakeLock: true, // Prevent device from sleeping
-//     allowWifiLock: true, // Prevent Wi-Fi from disconnecting
-//   ),
-// );
 
   runApp(const GeoGateApp());
 }
@@ -128,9 +107,7 @@ class _GeoGateAppState extends State<GeoGateApp> with WidgetsBindingObserver {
     });
   }  
 
-  void startCallback() {
-  FlutterForegroundTask.setTaskHandler(LocationTaskHandler());
-}
+  
 
 
 @override
@@ -140,21 +117,21 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.resumed:
         print('[GeoGateAppState] App resumed - Stopping foreground service.----------RESUME');
-        // MonitoringController.controller.stopMonitoring(); // Stop monitoring
+        MonitoringController.controller.stopMonitoring(); // Stop monitoring
         break;
 
       case AppLifecycleState.paused:
         print('[GeoGateAppState] App paused - Starting foreground service.------PAUSE');
-        // MonitoringController.controller.startMonitoring(); // Start monitoring
+        MonitoringController.controller.startMonitoring(); // Start monitoring
         break;
 
       case AppLifecycleState.detached:
         print('[GeoGateAppState] App detached - Cleanup if needed.------------------DETACH');
-        // MonitoringController.controller.stopMonitoring(); // Cleanup
+        MonitoringController.controller.stopMonitoring(); // Cleanup
         break;
       case AppLifecycleState.inactive:
         print('[GeoGateAppState] App inactice - Cleanup if needed.--------------INACTIVE');
-        // MonitoringController.controller.stopMonitoring(); // Cleanup
+        MonitoringController.controller.stopMonitoring(); // Cleanup
         break;
 
       default:

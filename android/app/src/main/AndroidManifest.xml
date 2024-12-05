@@ -12,14 +12,6 @@
 
   
 
-<!-- foregroundServiceType: dataSync -->
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
-
-<!-- foregroundServiceType: remoteMessaging -->
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING" />
-
-<!-- Warning: Do not change service name. -->
-
   
     <application
         android:label="geogate"
