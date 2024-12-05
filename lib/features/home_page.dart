@@ -4,6 +4,7 @@ import 'package:geogate/core/shared/widgets/online_image.dart';
 import 'package:geogate/core/theme/palette.dart';
 import 'package:geogate/features/auth/controller/auth_controller.dart';
 import 'package:geogate/features/event/controller/event_controller.dart';
+import 'package:geogate/features/event/pages/event_details_page.dart';
 import 'package:geogate/features/event/widget/event_card.dart';
 import 'package:get/get.dart';
 import 'package:gap/gap.dart';
@@ -134,7 +135,9 @@ class _HomePageState extends State<HomePage> {
                                         ?.copyWith(color: Palette.TEXT_LIGHT),
                                   ),
                                 )
-                              : EventCard(event: eventController.activeEvent.value),
+                              : EventCard(event: eventController.activeEvent.value, onView: (){
+                                Get.to(()=> EventDetailsPage());
+                              },),
                     ),
                   ],
                 ),

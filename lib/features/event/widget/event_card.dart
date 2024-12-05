@@ -1,16 +1,24 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:geogate/features/event/model/event.dart';
-import 'package:geogate/core/theme/palette.dart';
-import 'package:get/get.dart';
 import 'package:gap/gap.dart';
+import 'package:geogate/core/shared/widgets/ripple_container.dart';
+import 'package:get/get.dart';
 import 'package:heroicons/heroicons.dart';
+
+import 'package:geogate/core/theme/palette.dart';
+import 'package:geogate/features/event/model/event.dart';
 
 class EventCard extends StatelessWidget {
   final Event event;
+   final VoidCallback onView;
+  const EventCard({
+    Key? key,
+    required this.event,
+    required this.onView,
+  }) : super(key: key);
 
-  EventCard({required this.event});
 
   @override
   Widget build(BuildContext context) {
@@ -109,23 +117,29 @@ class EventCard extends StatelessWidget {
                                 ],
                               ),
                             ),
-                             Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(40),
-         color: Palette.GREEN3,
-         boxShadow: [
-          BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: Offset(0, 4),
-                ),
-         ]
-          
-        ),
-        child: Center(child: ClipRRect(child: HeroIcon(HeroIcons.mapPin,color: Colors.white,size: 28,),)),
-        )
+                             RippleContainer(
+                              onTap: (){
+                               
+                                onView();
+                              },
+                               child: Container(
+                                       width: 40,
+                                       height: 40,
+                                       decoration: BoxDecoration(
+                                         borderRadius: BorderRadius.circular(40),
+                                        color: Palette.GREEN3,
+                                        boxShadow: [
+                                         BoxShadow(
+                                                 color: Colors.black.withOpacity(0.1),
+                                                 blurRadius: 8,
+                                                 offset: Offset(0, 4),
+                                               ),
+                                        ]
+                                         
+                                       ),
+                                       child: Center(child: ClipRRect(child: HeroIcon(HeroIcons.mapPin,color: Colors.white,size: 28,),)),
+                                       ),
+                             )
                           ],
                         ),
                 padding: EdgeInsets.all(16),
