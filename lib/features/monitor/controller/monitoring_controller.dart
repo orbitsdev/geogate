@@ -1,4 +1,8 @@
 import 'dart:async';
+import 'package:geogate/core/api/dio/api_service.dart';
+import 'package:geogate/core/shared/modal/modal.dart';
+import 'package:geogate/features/auth/controller/auth_controller.dart';
+import 'package:geogate/features/event/model/event_schedule.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geogate/core/services/notificaiton_service.dart';
 import 'package:geogate/features/event/controller/event_controller.dart';
@@ -72,5 +76,29 @@ void stopMonitoring() {
         body: 'You are outside the allowed radius of the event.',
       );
     }
+  }
+
+ void markAbsent() async {
+    var user = AuthController.controller.user.value;
+    var schedule = EventController.controller.activeEvent.value.activeSchedule;
+
+    if (user.id == null || schedule == null) {
+      print('[MonitoringController] Unable to mark absent - Missing user or schedule data.');
+      return;
+    }
+
+     var data = {
+          'event_schedule_id': schedule.id,
+          'user_id': user.id,
+        };
+
+    var response = await ApiService.postAuthenticatedResource('attendance/mark-absent', data);
+
+    response.fold((failure){
+      Modal.errorDialog(failure: failure);
+    }, (success){
+      Modal.showToast(msg:  'You Have mar as absent');
+    });
+
   }
 }
