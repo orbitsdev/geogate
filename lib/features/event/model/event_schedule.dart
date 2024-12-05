@@ -1,5 +1,5 @@
 import 'package:geogate/features/event/model/attendance.dart';
-import 'package:geogate/features/event/model/pre_registration.dart';
+import 'package:geogate/features/preregistration/model/pre_registration.dart';
 
 
 class EventSchedule {

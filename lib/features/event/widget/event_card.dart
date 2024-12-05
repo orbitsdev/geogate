@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:geogate/core/shared/widgets/ripple_container.dart';
 import 'package:geogate/features/event/widget/event_schedule_card.dart';
+import 'package:geogate/features/preregistration/pages/pre_registration_page.dart';
 import 'package:get/get.dart';
 import 'package:heroicons/heroicons.dart';
 
@@ -175,9 +176,21 @@ class EventCard extends StatelessWidget {
                           // List of Schedules
                           Column(
                             children: event.eventSchedules!.map((schedule) {
-                              return EventScheduleCard(
-                                schedule: schedule,
-                                isActive: schedule.id == event.activeSchedule?.id,
+                              return RippleContainer(
+                                 onTap: () {
+                                    Get.to(
+                                      () => const MakePreRegistrationPage(),
+                                      arguments: {
+                                        'event': event,
+                                        'event_schedule': schedule,
+                                      },
+                                    );
+                                  },
+                                child: EventScheduleCard(
+                                  schedule: schedule,
+                                  isActive: schedule.id == event.activeSchedule?.id,
+                                 
+                                ),
                               );
                             }).toList(),
                           ),

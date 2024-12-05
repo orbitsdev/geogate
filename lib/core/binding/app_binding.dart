@@ -6,6 +6,7 @@ import 'package:geogate/core/shared/controller/notification_controller.dart';
 import 'package:geogate/features/auth/controller/auth_controller.dart';
 import 'package:geogate/features/course/controller/course_controller.dart';
 import 'package:geogate/features/event/controller/event_controller.dart';
+import 'package:geogate/features/preregistration/model/pre_registration.dart';
 import 'package:get/get.dart';
 
 class AppBinding  extends Bindings{
@@ -19,6 +20,7 @@ class AppBinding  extends Bindings{
     Get.put(ModalController(), permanent: true);
     Get.put(CourseController(), permanent: true);
     Get.put(EventController(), permanent: true);
+    Get.put(PreRegistration(), permanent: true);
  
   }
 
