@@ -1,8 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:geogate/core/binding/app_binding.dart';
 import 'package:geogate/core/services/firebase_service.dart';
+import 'package:geogate/core/services/local_task_handler.dart';
 import 'package:geogate/core/services/notificaiton_service.dart';
 import 'package:geogate/core/shared/controller/modal_controller.dart';
 import 'package:geogate/core/shared/modal/modal.dart';
@@ -18,8 +20,21 @@ import 'package:geogate/features/auth/pages/update_user_details.dart';
 import 'package:geogate/features/auth/pages/user_details_page.dart';
 import 'package:geogate/features/home_page.dart';
 import 'package:geogate/features/monitor/controller/monitoring_controller.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:workmanager/workmanager.dart';
+
+// void callbackDispatcher() {
+//   Workmanager().executeTask((task, inputData) async {
+//     if (task == "background_location_task") {
+//       print('[WorkManager] Executing background location task.');
+//       await MonitoringController.handleBackgroundTask();
+//     }
+//     return Future.value(true);
+//   });
+// }
+
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -40,6 +55,20 @@ Future<void> main() async {
 
   await AuthController.controller.loadTokenAndUser(showModal: false);
   ModalController.controller.setDialog(false);
+// Step 2: Request Location Permissions
+  final locationPermission = await Geolocator.requestPermission();
+  if (locationPermission == LocationPermission.denied || 
+      locationPermission == LocationPermission.deniedForever) {
+    print('[main] Location permissions denied.');
+    return; // Exit if permissions are not granted
+  }
+  print('[main] Location permissions granted.');
+
+  // // Step 3: Initialize WorkManager
+  // await Workmanager().initialize(
+  //   callbackDispatcher,
+  //   isInDebugMode: true, // Set false for production
+  // );
   runApp(const GeoGateApp());
 
   await NotificationsService().requestNotification();
@@ -53,6 +82,27 @@ Future<void> main() async {
   });
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+//     FlutterForegroundTask.init(
+//   androidNotificationOptions: AndroidNotificationOptions(
+//     channelId: 'location_tracking',
+//     channelName: 'Location Tracking',
+//     channelDescription: 'Tracks location in the background.',
+//     channelImportance: NotificationChannelImportance.HIGH,
+//     priority: NotificationPriority.HIGH,
+//   ),
+//   iosNotificationOptions: const IOSNotificationOptions(
+//     showNotification: true,
+//     playSound: false,
+//   ),
+//   foregroundTaskOptions:  ForegroundTaskOptions(
+//     eventAction: ForegroundTaskEventAction.repeat(5000), // Execute callback every 5 seconds
+//     autoRunOnBoot: true, // Restart service after reboot
+//     allowWakeLock: true, // Prevent device from sleeping
+//     allowWifiLock: true, // Prevent Wi-Fi from disconnecting
+//   ),
+// );
+
   runApp(const GeoGateApp());
 }
 
@@ -76,41 +126,43 @@ class _GeoGateAppState extends State<GeoGateApp> with WidgetsBindingObserver {
       AuthController.controller.updateDeviceToken();
 
     });
-  }
-  
-  @override
+  }  
+
+  void startCallback() {
+  FlutterForegroundTask.setTaskHandler(LocationTaskHandler());
+}
+
+
+@override
 void didChangeAppLifecycleState(AppLifecycleState state) {
   super.didChangeAppLifecycleState(state);
 
-  switch (state) {
-    case AppLifecycleState.resumed:
-      print('[GeoGateAppState] App resumed - Stop monitoring');
-      // Stop monitoring when the app is active and visible to the user
-      MonitoringController.controller.stopMonitoring();
-      break;
+    switch (state) {
+      case AppLifecycleState.resumed:
+        print('[GeoGateAppState] App resumed - Stopping foreground service.----------RESUME');
+        // MonitoringController.controller.stopMonitoring(); // Stop monitoring
+        break;
 
-    case AppLifecycleState.paused:
-      print('[GeoGateAppState] App paused - Start monitoring');
-      // Start monitoring when the app is paused (not visible but still active)
-      MonitoringController.controller.startMonitoring();
-      break;
+      case AppLifecycleState.paused:
+        print('[GeoGateAppState] App paused - Starting foreground service.------PAUSE');
+        // MonitoringController.controller.startMonitoring(); // Start monitoring
+        break;
 
-    case AppLifecycleState.inactive:
-      print('[GeoGateAppState] App inactive - Ensure monitoring is running');
-      // Start monitoring here as well to handle transitions or temporary inactivity
-      MonitoringController.controller.startMonitoring();
-      break;
+      case AppLifecycleState.detached:
+        print('[GeoGateAppState] App detached - Cleanup if needed.------------------DETACH');
+        // MonitoringController.controller.stopMonitoring(); // Cleanup
+        break;
+      case AppLifecycleState.inactive:
+        print('[GeoGateAppState] App inactice - Cleanup if needed.--------------INACTIVE');
+        // MonitoringController.controller.stopMonitoring(); // Cleanup
+        break;
 
-    case AppLifecycleState.detached:
-      print('[GeoGateAppState] App detached - Cleanup if needed');
-      // Optional: Cleanup resources if necessary, though monitoring can continue if required
-      MonitoringController.controller.stopMonitoring();
-      break;
+      default:
+        break;
+    }
 
-    default:
-      print('[GeoGateAppState] Unknown lifecycle state: $state');
-      break;
-  }
+
+
 }
 
   @override

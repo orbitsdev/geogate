@@ -1,76 +1,29 @@
-import 'dart:async';
-import 'package:geolocator/geolocator.dart';
-import 'package:geogate/core/services/notificaiton_service.dart';
-import 'package:geogate/features/event/controller/event_controller.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:geogate/core/services/local_task_handler.dart';
 import 'package:get/get.dart';
 
 class MonitoringController extends GetxController {
   static MonitoringController get controller => Get.find();
 
   bool isMonitoring = false;
-  late StreamSubscription<Position> _positionStream;
 
   void startMonitoring() {
-  if (isMonitoring) return;
+    if (isMonitoring) return; // Prevent duplicate calls
+    isMonitoring = true;
+    print('[MonitoringController] Starting location tracking...');
 
-  isMonitoring = true;
-  print('[MonitoringController] Monitoring started.');
-
-  _positionStream = Geolocator.getPositionStream(
-    locationSettings: const LocationSettings(
-      accuracy: LocationAccuracy.high,
-      // distanceFilter: 5, // Update every 5 meters
-    ),
-  ).listen((Position position) {
-    _handlePositionUpdate(position);
-  });
-
-  NotificationsService.showSimpleNotification(
-    title: 'Monitoring Active',
-    body: 'Monitoring has started in the background.',
-  );
-}
-
-void stopMonitoring() {
-  if (!isMonitoring) return;
-
-  isMonitoring = false;
-  print('[MonitoringController] Monitoring stopped.');
-  _positionStream.cancel();
-
-  NotificationsService.showSimpleNotification(
-    title: 'Monitoring Stopped',
-    body: 'Monitoring has been stopped.',
-  );
-}
-
-  void _handlePositionUpdate(Position position) {
-    final activeEvent = EventController.controller.activeEvent.value;
-
-    // Ensure the active event and campus data are valid
-    if (activeEvent.id == null || activeEvent.campus == null) {
-      print('[MonitoringController] No active event or campus data available.');
-      stopMonitoring();
-      return;
-    }
-
-    double distance = Geolocator.distanceBetween(
-      position.latitude,
-      position.longitude,
-      activeEvent.campus!.latitude!.toDouble(),
-      activeEvent.campus!.longitude!.toDouble(),
+    FlutterForegroundTask.startService(
+      notificationTitle: 'GeoGate Tracking',
+      notificationText: 'Location tracking is active.',
+      callback: () => FlutterForegroundTask.setTaskHandler(LocationTaskHandler()),
     );
+  }
 
-    print('------------MOVEMENT');
-    print('[MonitoringController] Current distance: $distance meters');
-    print('[MonitoringController] Allowed radius: ${activeEvent.campus!.radius ?? 50} meters');
-    print('------------END MOVE MENT');
+  void stopMonitoring() {
+    if (!isMonitoring) return; // Prevent duplicate calls
+    isMonitoring = false;
+    print('[MonitoringController] Stopping location tracking...');
 
-    if (distance > (activeEvent.campus!.radius ?? 50)) {
-      NotificationsService.showSimpleNotification(
-        title: 'Out of Radius',
-        body: 'You are outside the allowed radius of the event.',
-      );
-    }
+    FlutterForegroundTask.stopService();
   }
 }
