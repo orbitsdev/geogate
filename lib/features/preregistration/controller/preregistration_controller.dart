@@ -1,11 +1,18 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:geogate/core/api/dio/api_service.dart';
 import 'package:geogate/core/shared/modal/modal.dart';
+import 'package:geogate/core/shared/widgets/local_lottie_image.dart';
 import 'package:geogate/core/theme/palette.dart';
+import 'package:geogate/features/auth/controller/auth_controller.dart';
+import 'package:geogate/features/event/controller/event_controller.dart';
 import 'package:geogate/features/event/model/event.dart';
 import 'package:geogate/features/event/model/event_schedule.dart';
+import 'package:geogate/features/preregistration/pages/my_qr_page.dart';
+import 'package:geogate/features/preregistration/pages/qr_display_page.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -24,6 +31,9 @@ class PreRegistrationController extends GetxController {
   GoogleMapController? _googleMapController;
   late StreamSubscription<Position> _positionStream;
 
+   var hasPreRegistration = false.obs;
+  String preGeneratedQRData = ''; // Holds pre-generated QR data
+
   @override
   void onClose() {
     _positionStream.cancel();
@@ -39,6 +49,43 @@ class PreRegistrationController extends GetxController {
     setGeofenceCircle(); // Add geofence
     startListeningToPosition(); // Monitor position updates
   }
+Future<void> showCurrentLocation() async {
+  try {
+    // Check if location services are enabled
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      Modal.showToast(msg: "Location services are disabled. Please enable them.");
+      return;
+    }
+
+    // Check and request location permissions
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        Modal.showToast(msg: "Location permission denied.");
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      Modal.showToast(msg: "Location permissions are permanently denied. Please enable them from settings.");
+      return;
+    }
+
+    // Fetch the user's current position
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    // Debugging to check the fetched location
+    print("Current Location: Latitude: ${position.latitude}, Longitude: ${position.longitude}");
+
+    // Location is fetched, and the blue dot will be displayed because `myLocationEnabled: true`
+  } catch (e) {
+    Modal.showToast(msg: "Failed to fetch your location: $e");
+  }
+}
 
   Future<void> calculateInitialDistance() async {
     try {
@@ -169,26 +216,51 @@ void moveCameraToCampus() {
   );
 }
 
+Future<void> submitPreRegistrationWithQR(String qrData) async {
+  Modal.loading();
+  var data = {
+    'event_schedule_id': activeSchedule.value.id,
+    'qr_code': qrData, // Use the provided QR data
+  };
 
-  Future<void> submitPreRegistration() async {
-    Modal.loading();
-    var data = {
-      'event_schedule_id': activeSchedule.value.id,
-      'qr_code': 'Generated QR Code', // Placeholder for QR code logic
-    };
+  var response = await ApiService.postAuthenticatedResource('/pre-registration', data);
+  response.fold(
+    (failure) {
+      Get.back(); // Close the loading modal
 
-    var response = await ApiService.postAuthenticatedResource('/pre-registration', data);
-    response.fold(
-      (failure) {
-        Get.back();
+       if (failure.statusCode == 409) {
+        // Event is no longer active
+        Modal.errorDialog(
+          message: 'The event is no longer active. Refreshing data...',
+          onDismiss: () async {
+        
+             EventController.controller.getActiveEvent();
+            Get.until((route) => Get.currentRoute == '/home-main'); 
+          },
+        );
+      } else {
         Modal.errorDialog(failure: failure);
-      },
-      (success) {
-        Get.back();
-        Modal.success(message: 'Pre-Registration successful!');
-      },
-    );
-  }
+      }
+      // Modal.errorDialog(failure: failure);
+    },
+    (success) {
+      Get.back(); // Close loading modal
+      Modal.success(message: 'Pre-Registration successful!', onDismiss: () async {
+    
+        Get.until((route) => Get.currentRoute == '/home-main'); 
+        await EventController.controller.getActiveEvent();
+        Get.to(
+          () => MyQRCodePage(),
+          arguments: {
+            'qrData': qrData,
+            'event': activeEvent.value,
+            'schedule': activeSchedule.value,
+          },
+        );
+      });
+    },
+  );
+}
 
   CameraPosition get initialPosition => CameraPosition(
         target: LatLng(
@@ -206,4 +278,47 @@ void moveCameraToCampus() {
     }
     return zoomLevel.clamp(0.0, 20.0);
   }
+
+  Future<void> generateAndNavigateToQR() async {
+  try {
+ 
+    Modal.loadingWithPulse();
+    await Future.delayed(Duration(seconds: 1));
+ 
+    final position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
+   
+    final qrData = generateQRData(position);
+
+  
+    Get.back();
+
+ 
+    Get.to(
+      () => QRDisplayPage(),
+      arguments: {
+        'qrData': qrData,
+        'event': activeEvent.value,
+        'schedule': activeSchedule.value,
+        'position': position, 
+      },
+    );
+  } catch (e) {
+    Get.back();
+    Modal.errorDialog(message: 'Failed to generate QR: $e');
+  }
+}
+
+String generateQRData(Position position) {
+  final userId = Get.find<AuthController>().user.value.id; 
+  final eventId = activeEvent.value.id;
+  final scheduleId = activeSchedule.value.id;
+
+  final latitude = '${position.latitude}'; 
+  final longitude = '${position.longitude}';
+
+  return '$eventId-$scheduleId-$userId-$latitude-$longitude'; //eventId-scheduleId-latitude-longtitude
+}
+
+
 }

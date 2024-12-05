@@ -23,7 +23,7 @@ class UpdateUserDetailsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        // automaticallyImplyLeading: false,
         title: const Text(
           'Complete Your Details',
           style: TextStyle(color: Colors.white),

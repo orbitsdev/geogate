@@ -1,31 +1,29 @@
+import 'package:geogate/features/auth/model/user.dart';
+
 class PreRegistration {
   final int? id;
-  final int? eventScheduleId;
-  final int? userId;
   final String? qrCode;
+  final User? user; // Add the User model here
 
   PreRegistration({
     this.id,
-    this.eventScheduleId,
-    this.userId,
     this.qrCode,
+    this.user,
   });
 
   factory PreRegistration.fromJson(Map<String, dynamic> json) {
     return PreRegistration(
       id: json['id'],
-      eventScheduleId: json['event_schedule_id'],
-      userId: json['user_id'],
       qrCode: json['qr_code'],
+      user: json['user'] != null ? User.fromMap(json['user']) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'event_schedule_id': eventScheduleId,
-      'user_id': userId,
       'qr_code': qrCode,
+      'user': user?.toJson(),
     };
   }
 }

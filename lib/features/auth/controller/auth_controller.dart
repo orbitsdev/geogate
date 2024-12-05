@@ -310,11 +310,11 @@ Future<bool> fetchAndUpdateUserDetails({bool showModal = true}) async {
         // Parse the fetched user details
         final updatedUser = User.fromJson(success.data['data']);
 
-        print('Local stored user: ${user.value.toJson()}');
+        // print('Local stored user: ${user.value.toJson()}');
 
         // Check if the updated user is different from the locally stored user
         if (updatedUser != user.value) {
-          print('User details are different. Updating local user...');
+          // print('User details are different. Updating local user...');
 
           // Update the user and save it to SecureStorage
           user(updatedUser);
@@ -325,11 +325,11 @@ Future<bool> fetchAndUpdateUserDetails({bool showModal = true}) async {
             jsonEncode(updatedUser.toJson()),
           );
 
-          print('---------- UPDATED USER DETAILS ----------');
-          print('Updated User: ${user.value.toJson()}');
-          print('Course: ${user.value.userDetails?.course?.toJson()}');
-          print('Campus: ${user.value.userDetails?.course?.campus?.toJson()}');
-          print('------------------------------------------');
+          // print('---------- UPDATED USER DETAILS ----------');
+          // print('Updated User: ${user.value.toJson()}');
+          // print('Course: ${user.value.userDetails?.course?.toJson()}');
+          // print('Campus: ${user.value.userDetails?.course?.campus?.toJson()}');
+          // print('------------------------------------------');
         } else {
           print('No updates in user details.');
         }

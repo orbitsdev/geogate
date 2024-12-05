@@ -27,7 +27,7 @@ class EventCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         color: Palette.GREEN3,
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
       margin: const EdgeInsets.only(bottom: 24),
       child: Stack(
         children: [
@@ -38,7 +38,7 @@ class EventCard extends StatelessWidget {
             child: SizedBox(
               height: 120,
               width: 120,
-              child: SvgPicture.asset(
+            child: SvgPicture.asset(
                 'assets/images/event.svg',
                 fit: BoxFit.cover,
               ),
@@ -50,7 +50,7 @@ class EventCard extends StatelessWidget {
               // Event Date Section
               Row(
                 children: [
-                  Container(
+                Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: Colors.white,

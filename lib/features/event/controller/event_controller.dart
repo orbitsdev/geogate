@@ -3,12 +3,14 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:geogate/core/api/dio/api_service.dart';
+import 'package:geogate/core/helpers/logger.dart';
 import 'package:geogate/core/shared/modal/modal.dart';
 import 'package:geogate/features/auth/controller/auth_controller.dart';
 import 'package:geogate/features/event/model/event.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:logger/logger.dart';
 
 class EventController extends GetxController {
   static EventController controller = Get.find();
@@ -27,6 +29,9 @@ CameraPosition? cameraPosition = CameraPosition(
 
   // Fetch active event from API
   Future<void> getActiveEvent() async {
+    var logger = Logger();
+
+
     isLoading.value = true;
     final response = await ApiService.getAuthenticatedResource('active-event');
 
@@ -36,8 +41,10 @@ CameraPosition? cameraPosition = CameraPosition(
         Modal.errorDialog(failure: failure);
       },
       (success) {
+        logger.d("${success.data['data']['active_schedule']}");
+     
         isLoading.value = false;
-        print('Active Event Data: ${success.data['data']}');
+        // print('Active Event Data: ${success.data['data']}');
         final fetchedEvent = Event.fromJson(success.data['data']);
         activeEvent(fetchedEvent);
         update();

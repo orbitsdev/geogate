@@ -275,6 +275,31 @@ static success({
     );
   }
 
+  static void loadingWithPulse({String? message = 'Generating QR...'}) {
+  
+
+  Get.dialog(
+    AlertDialog(
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          LocalLottieImage(
+            path: 'assets/lotties/pulse.json', // Path to your pulse animation
+          ),
+          const Gap(12),
+          Text(
+            message ?? 'Loading...',
+            style: Get.textTheme.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    ),
+    barrierDismissible: false,
+  );
+}
+
+
   // Confirmation Dialog with optional Lottie/SVG/Image
   static confirmation({
     required String titleText,
