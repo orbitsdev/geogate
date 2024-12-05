@@ -1,9 +1,8 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:geogate/core/shared/widgets/ripple_container.dart';
+import 'package:geogate/features/event/widget/event_schedule_card.dart';
 import 'package:get/get.dart';
 import 'package:heroicons/heroicons.dart';
 
@@ -12,13 +11,13 @@ import 'package:geogate/features/event/model/event.dart';
 
 class EventCard extends StatelessWidget {
   final Event event;
-   final VoidCallback onView;
+  final VoidCallback onView;
+
   const EventCard({
     Key? key,
     required this.event,
     required this.onView,
   }) : super(key: key);
-
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +31,7 @@ class EventCard extends StatelessWidget {
       child: Stack(
         children: [
           // Background SVG Image
-           Positioned(
+          Positioned(
             top: 8,
             right: 8,
             child: SizedBox(
@@ -56,16 +55,12 @@ class EventCard extends StatelessWidget {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Column(
-                      children: [
-                        Text(
-                          '${event.startDate}',
-                          style: Get.textTheme.bodyMedium?.copyWith(
-                            color: Palette.GREEN3,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                    child: Text(
+                      '${event.startDate}',
+                      style: Get.textTheme.bodyMedium?.copyWith(
+                        color: Palette.GREEN3,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   const Spacer(),
@@ -74,15 +69,15 @@ class EventCard extends StatelessWidget {
               const Gap(16),
               // Event Description Section
               Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16)
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(width: Get.size.width,),
+                    // Event Description
                     Text(
                       event.eventDescription ?? 'Unknown Event',
                       style: Get.textTheme.titleMedium?.copyWith(
@@ -90,98 +85,109 @@ class EventCard extends StatelessWidget {
                         color: Palette.DARK_PRIMARY,
                       ),
                     ),
-                    const Gap(2),
-                    
-                    const Gap(16),
-                      Container(
-                        child: Row(
-                          children: [
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('${event.campus?.name}', style: Get.textTheme.bodyMedium!.copyWith(
+                    const Gap(8),
+                    // Coordinates Section with Background
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16,),
+                      decoration: BoxDecoration(
+                        color: Palette.GREEN1,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${event.campus?.name}',
+                                  style: Get.textTheme.bodyMedium!.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: Palette.GREEN3
-                                  )),
-                                  Gap(8),
-                                    Text('Coordinates', style: Get.textTheme.bodySmall!.copyWith(
-                                    color: Palette.GREEN3
-                                  ),),
-                                  Gap(6),
-                                  Container(width: Get.size.width,),
-                                  Text('${event.campus?.latitude}', style: Get.textTheme.bodySmall,),
-                                  Gap(2),
-                                  Text('${event.campus?.longitude}', style: Get.textTheme.bodySmall,),
-                                  Gap(2),
+                                    color: Palette.GREEN3,
+                                  ),
+                                ),
+                                Gap(4),
+                                Text(
+                                  'Coordinates',
+                                  style: Get.textTheme.bodySmall!.copyWith(
+                                    color: Palette.GREEN3,
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                                const Gap(6),
+                                Text(
+                                  'Latitude: ${event.campus?.latitude}',
+                                  style: Get.textTheme.bodySmall,
+                                ),
+                                const Gap(2),
+                                Text(
+                                  'Lotitude:${event.campus?.longitude}',
+                                  style: Get.textTheme.bodySmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                          RippleContainer(
+                            onTap: onView,
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(40),
+                                color: Palette.GREEN3,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
                                 ],
                               ),
+                              child: const Center(
+                                child: HeroIcon(
+                                  HeroIcons.mapPin,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
+                              ),
                             ),
-                             RippleContainer(
-                              onTap: (){
-                               
-                                onView();
-                              },
-                               child: Container(
-                                       width: 40,
-                                       height: 40,
-                                       decoration: BoxDecoration(
-                                         borderRadius: BorderRadius.circular(40),
-                                        color: Palette.GREEN3,
-                                        boxShadow: [
-                                         BoxShadow(
-                                                 color: Colors.black.withOpacity(0.1),
-                                                 blurRadius: 8,
-                                                 offset: Offset(0, 4),
-                                               ),
-                                        ]
-                                         
-                                       ),
-                                       child: Center(child: ClipRRect(child: HeroIcon(HeroIcons.mapPin,color: Colors.white,size: 28,),)),
-                                       ),
-                             )
-                          ],
-                        ),
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Palette.GREEN1,
-                  borderRadius: BorderRadius.circular(10),
-                ),),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Gap(8),
+                    Divider(),
+                    // Event Schedules Section
+                    if (event.eventSchedules != null && event.eventSchedules!.isNotEmpty)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Schedules:',
+                            style: Get.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Palette.DARK_PRIMARY,
+                            ),
+                          ),
+                          const Gap(8),
+                          // List of Schedules
+                          Column(
+                            children: event.eventSchedules!.map((schedule) {
+                              return EventScheduleCard(
+                                schedule: schedule,
+                                isActive: schedule.id == event.activeSchedule?.id,
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
                   ],
-                  
                 ),
               ),
-              // Location Section
-              // Row(
-              //   children: [
-              //     SvgPicture.asset(
-              //       'assets/images/location.svg',
-              //       color: Palette.PRIMARY,
-              //       height: 24,
-              //       width: 24,
-              //     ),
-              //     const Gap(8),
-              //     Expanded(
-              //       child: Text(
-              //         '${event.campus?.name ?? "Unknown Location"}',
-              //         style: Get.textTheme.bodySmall?.copyWith(
-              //           color: Palette.TEXT_DARK,
-              //         ),
-              //       ),
-              //     ),
-              //     if (event.campus != null) ...[
-              //       Text(
-              //         '${event.campus?.latitude ?? ""}, ${event.campus?.longitude ?? ""}',
-              //         style: Get.textTheme.bodySmall?.copyWith(
-              //           color: Palette.TEXT_LIGHT,
-              //         ),
-              //       ),
-              //     ],
-              //   ],
-              // ),
             ],
           ),
-         
         ],
       ),
     );
