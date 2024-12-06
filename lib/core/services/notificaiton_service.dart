@@ -101,7 +101,7 @@ class NotificationsService {
 
     AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      "channel_id_11",
+      "channel_id_12",
       "avantefoods",
       importance: Importance.max,
       priority: Priority.high,
@@ -146,7 +146,7 @@ class NotificationsService {
 
     AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      "channel_id_11",
+      "channel_id_12",
       "geolocation",
       importance: Importance.max,
       priority: Priority.high,
