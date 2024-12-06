@@ -300,7 +300,7 @@ static success({
 }
 
 
-  // Confirmation Dialog with optional Lottie/SVG/Image
+  
   static confirmation({
     required String titleText,
     required String contentText,
@@ -391,17 +391,7 @@ static success({
           ],
         ),
  
-          // TextButton(
-          //   onPressed: onCancel ?? () => Get.back(),
-          //   child: Text(cancelText),
-          // ),
-          // TextButton(
-          //   onPressed: () {
-          //     Get.back();
-          //     onConfirm();
-          //   },
-          //   child: Text(confirmText),
-          // ),
+       
         ],
       ),
       barrierDismissible: barrierDismissible,

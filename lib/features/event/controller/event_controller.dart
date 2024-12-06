@@ -49,7 +49,7 @@ CameraPosition? cameraPosition = CameraPosition(
         Modal.errorDialog(failure: failure);
       },
       (success) {
-        // logger.d("${success.data['data']['active_schedule']}");
+        logger.d("${success.data['data']['active_schedule']}");
      
         isLoading.value = false;
         // print('Active Event Data: ${success.data['data']}');

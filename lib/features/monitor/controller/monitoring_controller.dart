@@ -75,30 +75,40 @@ void stopMonitoring() {
         title: 'Out of Radius',
         body: 'You are outside the allowed radius of the event.',
       );
+      markAbsent();
     }
   }
 
  void markAbsent() async {
-    var user = AuthController.controller.user.value;
-    var schedule = EventController.controller.activeEvent.value.activeSchedule;
+  var user = AuthController.controller.user.value;
+  var schedule = EventController.controller.activeEvent.value.activeSchedule;
 
-    if (user.id == null || schedule == null) {
-      print('[MonitoringController] Unable to mark absent - Missing user or schedule data.');
-      return;
-    }
-
-     var data = {
-          'event_schedule_id': schedule.id,
-          'user_id': user.id,
-        };
-
-    var response = await ApiService.postAuthenticatedResource('attendance/mark-absent', data);
-
-    response.fold((failure){
-      Modal.errorDialog(failure: failure);
-    }, (success){
-      Modal.showToast(msg:  'You Have mar as absent');
-    });
-
+  if (user.id == null || schedule == null || schedule.hasAttendance == null) {
+     Modal.showToast(msg: '[MonitoringController] Unable to mark absent - Missing user, schedule, or attendance data.' );
+    print('[MonitoringController] Unable to mark absent - Missing user, schedule, or attendance data.');
+    return;
   }
+
+  // Get the attendance ID from the schedule
+  var attendance = schedule.hasAttendance;
+
+  if (attendance == null || attendance.id == null) {
+    Modal.showToast(msg: '[MonitoringController] No attendance record found to mark absent.' );
+    print('[MonitoringController] No attendance record found to mark absent.');
+    return;
+  }
+
+  var data = {
+    'attendance_id': attendance.id,
+  };
+
+  var response = await ApiService.postAuthenticatedResource('attendance/mark-absent', data);
+
+  response.fold((failure) {
+    Modal.errorDialog(failure: failure);
+  }, (success) {
+    Modal.showToast(msg: 'You have been marked as absent.');
+  });
+}
+
 }

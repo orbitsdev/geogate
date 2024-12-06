@@ -116,22 +116,23 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
 
     switch (state) {
       case AppLifecycleState.resumed:
-        print('[GeoGateAppState] App resumed - Stopping foreground service.----------RESUME');
-        MonitoringController.controller.stopMonitoring(); // Stop monitoring
+            print('[GeoGateAppState] App resumed - Stop monitoring');
+        MonitoringController.controller.stopMonitoring();
         break;
 
       case AppLifecycleState.paused:
         print('[GeoGateAppState] App paused - Starting foreground service.------PAUSE');
-        MonitoringController.controller.startMonitoring(); // Start monitoring
+         print('[GeoGateAppState] App paused - Start monitoring');
+        MonitoringController.controller.startMonitoring();
         break;
 
       case AppLifecycleState.detached:
-        print('[GeoGateAppState] App detached - Cleanup if needed.------------------DETACH');
-        MonitoringController.controller.stopMonitoring(); // Cleanup
+        // print('[GeoGateAppState] App detached - Cleanup if needed.------------------DETACH');
+        // MonitoringController.controller.stopMonitoring(); // Cleanup
         break;
       case AppLifecycleState.inactive:
-        print('[GeoGateAppState] App inactice - Cleanup if needed.--------------INACTIVE');
-        MonitoringController.controller.stopMonitoring(); // Cleanup
+        // print('[GeoGateAppState] App inactice - Cleanup if needed.--------------INACTIVE');
+        // MonitoringController.controller.stopMonitoring(); // Cleanup
         break;
 
       default:

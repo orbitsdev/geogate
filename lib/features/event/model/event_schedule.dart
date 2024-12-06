@@ -13,6 +13,7 @@ class EventSchedule {
   final List<Attendance>? attendances;
   final List<PreRegistration>? preRegistrations;
   final PreRegistration? hasPreRegistration;
+  final Attendance? hasAttendance;
 
   EventSchedule({
     this.id,
@@ -25,6 +26,7 @@ class EventSchedule {
     this.attendances,
     this.preRegistrations,
     this.hasPreRegistration,
+    this.hasAttendance,
   });
 
   factory EventSchedule.fromJson(Map<String, dynamic> json) {
@@ -49,6 +51,9 @@ class EventSchedule {
       hasPreRegistration: json['has_pre_registration'] != null
           ? PreRegistration.fromJson(json['has_pre_registration'])
           : null,
+      hasAttendance: json['has_attendance'] != null
+          ? Attendance.fromJson(json['has_attendance'])
+          : null,
     );
   }
 
@@ -64,6 +69,7 @@ class EventSchedule {
       'attendances': attendances?.map((e) => e.toJson()).toList(),
       'pre_registrations': preRegistrations?.map((e) => e.toJson()).toList(),
       'has_pre_registration': hasPreRegistration?.toJson(),
+      'has_attendance': hasAttendance?.toJson(),
     };
   }
 }
