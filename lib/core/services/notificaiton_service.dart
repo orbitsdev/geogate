@@ -73,15 +73,17 @@ class NotificationsService {
 
   static void handleForground(RemoteMessage message) {
     
-    if (message.data['notification'] == 'task') {
-      print('task forground');
-      //  NotificationController.controller.loadNotifications();
-    }
+   // Handle foreground message
+    if (message.data['notification_type'] == 'absent_notification') {
 
-    NotificationsService.showNotificationWithLongContent(
-        title: message.notification?.title,
-        body: message.notification?.body,
-        data: message.data);
+         NotificationsService.showNotificationWithLogoAndLongContent(
+     title: '${message.notification?.title}',
+        body: '${message.notification?.body}',
+       data: message.data,
+      
+    );
+     
+    } 
   }
 
   static showSimpleNotification({
@@ -167,15 +169,14 @@ class NotificationsService {
       payload: jsonEncode(data),
     );
   }
-static Future<void> showNotificationWithLogo({
+  static Future<void> showNotificationWithLogoAndLongContent({
   required String title,
   required String body,
-  required String assetPath, // Path to the logo asset
   Map<String, dynamic>? data,
 }) async {
   try {
     // Load the logo from assets
-    final ByteData bytes = await rootBundle.load(assetPath);
+    final ByteData bytes = await rootBundle.load('assets/images/logo.png');
     final Uint8List byteArray = bytes.buffer.asUint8List();
 
     // Save the logo to a temporary file
@@ -185,16 +186,23 @@ static Future<void> showNotificationWithLogo({
     await file.writeAsBytes(byteArray);
 
     // Define Android notification details with the logo as a large icon
-    final AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails(
-      'logo_notification_channel', // Channel ID
-      'Logo Notifications', // Channel Name
-      channelDescription: 'Notifications with a logo as the large icon', // Description
+    final BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
+      body, // The main text to display when expanded
+      contentTitle: title,
+      htmlFormatContent: true,
+      htmlFormatContentTitle: true,
+    );
+
+    final AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
+      'logo_long_text_notification_channel', // Channel ID
+      'Logo Long Text Notifications', // Channel Name
+      channelDescription: 'Notifications with a logo and long text content', // Channel description
       importance: Importance.max,
       priority: Priority.high,
       playSound: true,
       largeIcon: FilePathAndroidBitmap(filePath), // Set the logo as the large icon
       icon: '@mipmap/ic_launcher', // Small notification icon
+      styleInformation: bigTextStyleInformation, // Set the style information for long text
     );
 
     // Platform-specific notification details
@@ -211,9 +219,11 @@ static Future<void> showNotificationWithLogo({
       payload: data != null ? jsonEncode(data) : null, // Optional payload
     );
   } catch (e) {
-    debugPrint('Error showing notification with logo: $e');
+    debugPrint('Error showing notification with logo and long content: $e');
   }
 }
+
+
 
   static Future<void> showNotificationWithAssetImage({
   required String title,

@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:geogate/core/shared/widgets/ripple_container.dart';
+import 'package:geogate/core/shared/widgets/status_indicator.dart';
 import 'package:geogate/core/theme/palette.dart';
 import 'package:geogate/features/event/controller/event_controller.dart';
 import 'package:get/get.dart';
@@ -111,6 +112,7 @@ class EventDetailsPage extends StatelessWidget {
                             children: [
                               // Event Name and Organizer
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Icon(Icons.event, color: Palette.GREEN3, size: 28),
                                   SizedBox(width: 10),
@@ -123,7 +125,7 @@ class EventDetailsPage extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                 
+                                  const StatusIndicator(),
                                 ],
                               ),
                               Divider(color: Palette.GREEN1,),

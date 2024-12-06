@@ -403,7 +403,7 @@ Future<bool> fetchAndUpdateUserDetails({bool showModal = true}) async {
         return false; 
       },
       (success) async {
-
+       
         await clearLocalData();
 
  
@@ -438,53 +438,121 @@ Future<bool> fetchAndUpdateUserDetails({bool showModal = true}) async {
   }
 
   
-
-
 Future<void> signInWithGoogle() async {
-    String? userDetails = await SecureStorage().readSecureData('user');
+  // Check if there are user details in secure storage
+  String? userDetails = await SecureStorage().readSecureData('user');
 
-    if (userDetails == null) {
-      await googleSignIn.signOut();
-    }
+  // Sign out from Google if user details are not available
+  if (userDetails == null) {
+    await googleSignIn.signOut();
+  }
 
-    Modal.loading();
-    final GoogleSignInAccount? googleAccount = await googleSignIn.signIn().catchError((err) {
+  Modal.loading();
 
-      print('------------------ ERROR');
-      print('${err}');
-      print('------------------ ERRORS');
-      Get.back();
-      Modal.showToast(msg: err.toString());
-    });
+  try {
+    // Start Google Sign-In
+    final GoogleSignInAccount? googleAccount = await googleSignIn.signIn();
 
+    // If user cancels the sign-in, handle gracefully
     if (googleAccount == null) {
       Get.back();
-
       return;
     }
 
+    // Fetch authentication details
     final GoogleSignInAuthentication googleAuthentication =
         await googleAccount.authentication;
+
+    // Send the Google token to your backend
     var response = await ApiService.postPublicResource(
         'sign-in-with-google', {'token': googleAuthentication.accessToken});
 
-    // Modal.androidDialog(context,title: 'Authenticating');
-    response.fold((failure) {
-      Get.back();
-      Modal.errorDialog( failure:  failure);
-    }, (success) async {
+    response.fold(
+      (failure) async {
+        Get.back();
+
+        // Handle institutional email restriction or other errors
+        if (failure.statusCode == 403) {
+          Modal.errorDialog(
+              message: 'Only institutional emails are allowed. Please use your @sksu.edu.ph email.');
+        } else {
+          Modal.errorDialog(failure: failure);
+        }
+
+        // Sign out from Google to clear cached account on error
+        await googleSignIn.signOut();
+      },
+      (success) async {
         final data = success.data['data'];
-        print('DATA----------------');
-        print(data);
-        print('DATA--------------');
+
+        // Store user details and token
         await SecureStorage().writeSecureData('token', data['access_token']);
         await SecureStorage().writeSecureData('user', jsonEncode(data['user']));
-       
+
+        // Load the authenticated user and update the device token
         await loadTokenAndUser();
         await AuthController.controller.updateDeviceToken();
+
+        // Navigate to the home page
         Get.offAllNamed('/home-main');
-    });
+      },
+    );
+  } catch (err) {
+    // Catch and handle unexpected errors
+    Get.back();
+    Modal.showToast(msg: 'An error occurred. Please try again.');
+
+    // Ensure Google Sign-Out on any unexpected error
+    await googleSignIn.signOut();
   }
+}
+
+
+// Future<void> signInWithGoogle() async {
+//     String? userDetails = await SecureStorage().readSecureData('user');
+
+//     if (userDetails == null) {
+//       await googleSignIn.signOut();
+//     }
+
+//     Modal.loading();
+//     final GoogleSignInAccount? googleAccount = await googleSignIn.signIn().catchError((err) {
+
+//       print('------------------ ERROR');
+//       print('${err}');
+//       print('------------------ ERRORS');
+//       Get.back();
+//       Modal.showToast(msg: err.toString());
+//     });
+
+//     if (googleAccount == null) {
+//       Get.back();
+
+//       return;
+//     }
+
+//     final GoogleSignInAuthentication googleAuthentication =
+//         await googleAccount.authentication;
+//     var response = await ApiService.postPublicResource(
+//         'sign-in-with-google', {'token': googleAuthentication.accessToken});
+
+//     // Modal.androidDialog(context,title: 'Authenticating');
+//     response.fold((failure) {
+//       Get.back();
+//       Modal.errorDialog( failure:  failure);
+//     }, (success) async {
+//         final data = success.data['data'];
+//         print('DATA----------------');
+//         print(data);
+//         print('DATA--------------');
+//         await SecureStorage().writeSecureData('token', data['access_token']);
+//         await SecureStorage().writeSecureData('user', jsonEncode(data['user']));
+       
+//         await loadTokenAndUser();
+//         await AuthController.controller.updateDeviceToken();
+//         Get.offAllNamed('/home-main');
+//     });
+//   }
 
 
   Future<void> updateUserDetails({String? path}) async {

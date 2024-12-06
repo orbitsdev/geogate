@@ -33,12 +33,12 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 //   });
 // }
 
-
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   NotificationsService.handleBackground(message);
 }
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -93,6 +93,10 @@ class GeoGateApp extends StatefulWidget {
 }
 
 class _GeoGateAppState extends State<GeoGateApp> with WidgetsBindingObserver {
+
+
+  
+
   @override
   void initState() {
     super.initState();
@@ -101,12 +105,16 @@ class _GeoGateAppState extends State<GeoGateApp> with WidgetsBindingObserver {
     Future.delayed(Duration.zero, () async {
       if (AuthController.controller.token.value.isNotEmpty) {
         await AuthController.controller .fetchAndUpdateUserDetails(showModal: true);
+         MonitoringController.controller.startMonitoring();
       }
       AuthController.controller.updateDeviceToken();
+
+       
 
     });
   }  
 
+  
   
 
 
@@ -117,7 +125,7 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.resumed:
             print('[GeoGateAppState] App resumed - Stop monitoring');
-        MonitoringController.controller.stopMonitoring();
+       // MonitoringController.controller.stopMonitoring();
         break;
 
       case AppLifecycleState.paused:
@@ -127,10 +135,13 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
         break;
 
       case AppLifecycleState.detached:
+
+
         // print('[GeoGateAppState] App detached - Cleanup if needed.------------------DETACH');
         // MonitoringController.controller.stopMonitoring(); // Cleanup
         break;
       case AppLifecycleState.inactive:
+
         // print('[GeoGateAppState] App inactice - Cleanup if needed.--------------INACTIVE');
         // MonitoringController.controller.stopMonitoring(); // Cleanup
         break;

@@ -8,6 +8,7 @@ import 'package:geogate/core/services/notificaiton_service.dart';
 import 'package:geogate/core/shared/modal/modal.dart';
 import 'package:geogate/features/auth/controller/auth_controller.dart';
 import 'package:geogate/features/event/model/event.dart';
+import 'package:geogate/features/monitor/controller/monitoring_controller.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -30,13 +31,13 @@ CameraPosition? cameraPosition = CameraPosition(
 
   // Fetch active event from API
   Future<void> getActiveEvent() async {
-    await NotificationsService.showNotificationWithLogo(
-  title: 'Welcome!',
-  body: 'Thank you for joining our app!',
-  assetPath: 'assets/images/logo.png', // Correct path to your asset
-  data: {'type': 'welcome', 'id': 123},
-);
 
+//     await NotificationsService.showNotificationWithLogo(
+//   title: 'Welcome!',
+//   body: 'Thank you for joining our app!',
+//   assetPath: 'assets/images/logo.png', // Correct path to your asset
+//   data: {'type': 'welcome', 'id': 123},
+// );
     var logger = Logger();
 
 
@@ -65,6 +66,7 @@ CameraPosition? cameraPosition = CameraPosition(
     await Future.wait([
       AuthController.controller.fetchAndUpdateUserDetails(),
       getActiveEvent(),
+      MonitoringController.controller.refreshMonitoring()
     ]);
   }
 

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:geogate/core/shared/widgets/ripple_container.dart';
+import 'package:geogate/core/shared/widgets/status_indicator.dart';
 import 'package:geogate/core/theme/palette.dart';
 import 'package:geogate/features/auth/controller/auth_controller.dart';
+import 'package:geogate/features/location/pages/my_location_page.dart';
 import 'package:geogate/features/preregistration/controller/preregistration_controller.dart';
 import 'package:geogate/features/preregistration/pages/full_screen_qr.dart';
 import 'package:geogate/features/preregistration/pages/my_qr_page.dart';
@@ -77,12 +79,19 @@ class MakePreRegistrationPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Event Title
-                        Text(
-                          '${controller.activeEvent.value.eventDescription ?? "Unknown Event"}',
-                          style: Get.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Palette.PRIMARY,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                '${controller.activeEvent.value.eventDescription ?? "Unknown Event"}' ,
+                                style: Get.textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Palette.PRIMARY,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         Divider(color: Palette.GREEN1),
                         const Gap(8),
@@ -114,6 +123,22 @@ class MakePreRegistrationPage extends StatelessWidget {
                                       controller.moveCameraToCampus();
                                     },
                                     child: HeroIcon(
+                                      HeroIcons.buildingLibrary,
+                                      size: 40,
+                                      color: Palette.PRIMARY,
+                                    ),
+                                  ),
+                                  RippleContainer(
+                                    onTap: () {
+                                       Get.to(
+                                      () =>  MyLocationPage(),
+                                      arguments: {
+                                        'event': controller.activeEvent,
+                                        'event_schedule': controller.activeSchedule.value,
+                                      },
+                                    );
+                                    },
+                                    child: HeroIcon(
                                       HeroIcons.mapPin,
                                       size: 40,
                                       color: Palette.PRIMARY,
@@ -130,7 +155,7 @@ class MakePreRegistrationPage extends StatelessWidget {
                                   return Stack(
                                       alignment: Alignment.center,
                                       children: [
-                                        Container(
+                                       if(hasPreRegistration)  Container(
                                           width: 60,
                                           height: 60,
                                           decoration: BoxDecoration(
@@ -138,19 +163,19 @@ class MakePreRegistrationPage extends StatelessWidget {
                                             color: Palette.GREEN2.withOpacity(0.2),
                                           ),
                                         ),
-                                        GestureDetector(
+                                       GestureDetector(
                                           onTap: hasPreRegistration
                                               ? () {
                                                  Get.to(()=> FullScreenQr(qrValue:'${controller.activeSchedule.value.hasPreRegistration?.qrCode}'  ), transition: Transition.zoom);
                                                 }
                                               : null,
-                                          child: QrImageView(
+                                          child:hasPreRegistration? QrImageView(
                                             data:
                                                 '${controller.activeSchedule.value.hasPreRegistration?.qrCode ?? "No QR Data"}',
                                             version: QrVersions.auto,
                                             size: 60.0,
                                             backgroundColor: Colors.white,
-                                          ),
+                                          ): Container()
                                         ),
                                       ],
                                     );

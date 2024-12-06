@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
+import 'package:geogate/core/shared/modal/modal.dart';
 import 'package:geogate/core/shared/widgets/ripple_container.dart';
 import 'package:geogate/features/event/widget/event_schedule_card.dart';
 import 'package:geogate/features/preregistration/pages/pre_registration_page.dart';
@@ -178,6 +179,8 @@ class EventCard extends StatelessWidget {
                             children: event.eventSchedules!.map((schedule) {
                               return RippleContainer(
                                  onTap: () {
+                                   
+                                   if(schedule.isActive == true) {
                                     Get.to(
                                       () => const MakePreRegistrationPage(),
                                       arguments: {
@@ -185,6 +188,13 @@ class EventCard extends StatelessWidget {
                                         'event_schedule': schedule,
                                       },
                                     );
+                                   }else{
+                                Modal.showToast(
+  msg: 'You can only navigate to events with an active schedule.', 
+  color: Palette.GREEN3,
+);
+
+                                   }
                                   },
                                 child: EventScheduleCard(
                                   schedule: schedule,
