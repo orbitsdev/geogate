@@ -15,6 +15,7 @@ import 'package:geogate/core/theme/palette.dart';
 import 'package:geogate/features/auth/model/user.dart';
 import 'package:geogate/features/event/controller/event_controller.dart';
 import 'package:geogate/features/home_page.dart';
+import 'package:geogate/features/monitor/controller/monitoring_controller.dart';
 
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -393,7 +394,7 @@ Future<bool> fetchAndUpdateUserDetails({bool showModal = true}) async {
     
     return response.fold(
       (failure) async {
-
+ MonitoringController.controller.stopMonitoring();
        
         await clearLocalData();
         Modal.error(
@@ -403,7 +404,7 @@ Future<bool> fetchAndUpdateUserDetails({bool showModal = true}) async {
         return false; 
       },
       (success) async {
-       
+        MonitoringController.controller.stopMonitoring();
         await clearLocalData();
 
  
@@ -449,7 +450,6 @@ Future<void> signInWithGoogle() async {
 
   Modal.loading();
 
-  try {
     // Start Google Sign-In
     final GoogleSignInAccount? googleAccount = await googleSignIn.signIn();
 
@@ -473,8 +473,7 @@ Future<void> signInWithGoogle() async {
 
         // Handle institutional email restriction or other errors
         if (failure.statusCode == 403) {
-          Modal.errorDialog(
-              message: 'Only institutional emails are allowed. Please use your @sksu.edu.ph email.');
+           Modal.errorDialog(failure: failure);
         } else {
           Modal.errorDialog(failure: failure);
         }
@@ -497,14 +496,7 @@ Future<void> signInWithGoogle() async {
         Get.offAllNamed('/home-main');
       },
     );
-  } catch (err) {
-    // Catch and handle unexpected errors
-    Get.back();
-    Modal.showToast(msg: 'An error occurred. Please try again.');
-
-    // Ensure Google Sign-Out on any unexpected error
-    await googleSignIn.signOut();
-  }
+  
 }
 
 

@@ -33,7 +33,7 @@ class StatusIndicator extends StatelessWidget {
           const SizedBox(height: 2), // Spacing between dot and text
           // Status Text
           Text(
-            isInside ? "In-range" : "Far",
+            isInside ? "In-Range" : "Out-Of-Range",
             style: TextStyle(
               fontSize: 10, // Slightly larger for better readability
               color: isInside ? Colors.green : Colors.red, // Matches dot color

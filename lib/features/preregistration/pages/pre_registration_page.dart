@@ -128,22 +128,7 @@ class MakePreRegistrationPage extends StatelessWidget {
                                       color: Palette.PRIMARY,
                                     ),
                                   ),
-                                  RippleContainer(
-                                    onTap: () {
-                                       Get.to(
-                                      () =>  MyLocationPage(),
-                                      arguments: {
-                                        'event': controller.activeEvent,
-                                        'event_schedule': controller.activeSchedule.value,
-                                      },
-                                    );
-                                    },
-                                    child: HeroIcon(
-                                      HeroIcons.mapPin,
-                                      size: 40,
-                                      color: Palette.PRIMARY,
-                                    ),
-                                  ),
+                                  
                                   Obx(
                                     (){
                                   

@@ -771,6 +771,54 @@ static showCollectionMenu() {
   );
 }
 
+
+static void showEventOptions({
+  required VoidCallback onPreRegistration,
+  required VoidCallback onMonitorLocation,
+}) {
+  Get.bottomSheet(
+    Container(
+      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: Icon(Icons.event, color: Palette.PRIMARY),
+            title: Text(
+              'PRE-REGISTRATION',
+              style: Get.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Palette.TEXT_DARK,
+              ),
+            ),
+            onTap: onPreRegistration,
+          ),
+          const Divider(height: 1, color: Colors.grey),
+          ListTile(
+            leading: Icon(Icons.location_on, color: Palette.GREEN3),
+            title: Text(
+              'MONITOR MY LOCATION',
+              style: Get.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Palette.TEXT_DARK,
+              ),
+            ),
+            onTap: onMonitorLocation,
+          ),
+        ],
+      ),
+    ),
+    isScrollControlled: true,
+  );
+}
+
+
+
+
 }
 
 

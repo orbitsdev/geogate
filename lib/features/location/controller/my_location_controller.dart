@@ -18,9 +18,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
 class MyLocationController extends GetxController {
-
-  static MyLocationController controller = Get.find();
-  
   // Observables
   var isLoading = false.obs;
   var isWithinRadius = false.obs;

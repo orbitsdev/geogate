@@ -29,38 +29,55 @@ Future<void> refreshMonitoring() async {
 }
 
   Future<void> startMonitoring() async {
-    var isAuthenticated = AuthController.controller.user.value.id != null;
-    if (!isAuthenticated) return;
+  // Check if the user is authenticated
+  var isAuthenticated = AuthController.controller.user.value.id != null;
+  if (!isAuthenticated) {
+    print('[MonitoringController] User is not authenticated. Monitoring will not start.');
+    stopMonitoring(); // Ensure monitoring is stopped
+    return;
+  }
 
-    if (isMonitoring.value) return;
+  // If monitoring is already active, exit
+  if (isMonitoring.value) {
+    print('[MonitoringController] Monitoring is already active.');
+    return;
+  }
 
-     if (EventController.controller.activeEvent.value.id == null) {
+  // Check for an active event
+  if (EventController.controller.activeEvent.value.id == null) {
     await EventController.controller.getActiveEvent();
   }
-if (EventController.controller.activeEvent.value.id == null) {
+  if (EventController.controller.activeEvent.value.id == null) {
     print('[MonitoringController] No active event. Monitoring will not start.');
     return;
   }
-    isMonitoring.value = true;
-    print('[MonitoringController] Monitoring started.');
 
-    _positionStream = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-         distanceFilter: 10, // Trigger every 5 meters
-      ),
-    ).listen((Position position) {
-      _handlePositionUpdate(position);
-    });
-  }
+  // Start monitoring
+  isMonitoring.value = true;
+  print('[MonitoringController] Monitoring started.');
+
+  _positionStream = Geolocator.getPositionStream(
+    locationSettings: const LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 10, // Trigger every 10 meters
+    ),
+  ).listen((Position position) {
+    _handlePositionUpdate(position);
+  });
+}
+
 
   void stopMonitoring() {
-    if (!isMonitoring.value) return;
+  if (!isMonitoring.value) return;
 
-    isMonitoring.value = false;
-    print('[MonitoringController] Monitoring stopped.');
+  isMonitoring.value = false;
+  print('[MonitoringController] Monitoring stopped.');
+
+  if (_positionStream != null) {
     _positionStream.cancel();
   }
+}
+
 void _handlePositionUpdate(Position position) async {
   final activeEvent = EventController.controller.activeEvent.value;
 
@@ -129,9 +146,9 @@ double _calculateDistanceFromCampus({
     var schedule = EventController.controller.activeEvent.value.activeSchedule;
 
     if (user.id == null || schedule == null || schedule.hasAttendance == null) {
-      Modal.showToast(
-        msg: '[MonitoringController] Unable to mark absent - Missing user, schedule, or attendance data.',
-      );
+      // Modal.showToast(
+      //   msg: '[MonitoringController] Unable to mark absent - Missing user, schedule, or attendance data.',
+      // );
       print('[MonitoringController] Unable to mark absent - Missing user, schedule, or attendance data.');
       return;
     }
@@ -139,7 +156,7 @@ double _calculateDistanceFromCampus({
     var attendance = schedule.hasAttendance;
 
     if (attendance == null || attendance.id == null) {
-      Modal.showToast(msg: '[MonitoringController] No attendance record found to mark absent.');
+      // Modal.showToast(msg: 'No attendance record found to mark absent.');
       print('[MonitoringController] No attendance record found to mark absent.');
       return;
     }

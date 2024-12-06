@@ -4,6 +4,8 @@ import 'package:gap/gap.dart';
 import 'package:geogate/core/shared/modal/modal.dart';
 import 'package:geogate/core/shared/widgets/ripple_container.dart';
 import 'package:geogate/features/event/widget/event_schedule_card.dart';
+import 'package:geogate/features/location/controller/my_location_controller.dart';
+import 'package:geogate/features/location/pages/my_location_page.dart';
 import 'package:geogate/features/preregistration/pages/pre_registration_page.dart';
 import 'package:get/get.dart';
 import 'package:heroicons/heroicons.dart';
@@ -175,35 +177,57 @@ class EventCard extends StatelessWidget {
                           ),
                           const Gap(8),
                           // List of Schedules
-                          Column(
-                            children: event.eventSchedules!.map((schedule) {
-                              return RippleContainer(
-                                 onTap: () {
-                                   
-                                   if(schedule.isActive == true) {
-                                    Get.to(
-                                      () => const MakePreRegistrationPage(),
-                                      arguments: {
-                                        'event': event,
-                                        'event_schedule': schedule,
-                                      },
-                                    );
-                                   }else{
-                                Modal.showToast(
-  msg: 'You can only navigate to events with an active schedule.', 
-  color: Palette.GREEN3,
-);
+                         Column(
+  children: event.eventSchedules!.map((schedule) {
+    return RippleContainer(
+      onTap: () {
+        if (schedule.isActive == true) {
+          if (schedule.hasAttendance != null && schedule.hasAttendance?.id != null) {
+            // Show bottom sheet with options
+            Modal.showEventOptions(
+              onPreRegistration: () {
+                Get.to(
+                  () => const MakePreRegistrationPage(),
+                  arguments: {
+                    'event': event,
+                    'event_schedule': schedule,
+                  },
+                );
+              },
+              onMonitorLocation: () {
+                Get.to(
+                  () =>  MyLocationPage(),
+                  arguments: {
+                    'event': event,
+                    'event_schedule': schedule,
+                  },
+                );
+              },
+            );
+          }else{
+            Get.to(
+                  () => const MakePreRegistrationPage(),
+                  arguments: {
+                    'event': event,
+                    'event_schedule': schedule,
+                  },
+                );
+          }
+        } else {
+          Modal.showToast(
+            msg: 'You can only navigate to events with an active schedule.',
+            color: Palette.GREEN3,
+          );
+        }
+      },
+      child: EventScheduleCard(
+        schedule: schedule,
+        isActive: schedule.id == event.activeSchedule?.id,
+      ),
+    );
+  }).toList(),
+)
 
-                                   }
-                                  },
-                                child: EventScheduleCard(
-                                  schedule: schedule,
-                                  isActive: schedule.id == event.activeSchedule?.id,
-                                 
-                                ),
-                              );
-                            }).toList(),
-                          ),
                         ],
                       ),
                   ],

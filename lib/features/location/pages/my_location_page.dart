@@ -19,8 +19,8 @@ class MyLocationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final PreRegistrationController controller =
-        Get.put(PreRegistrationController());
+    final MyLocationController controller =
+        Get.put(MyLocationController());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.initializeData();
     });
@@ -30,7 +30,7 @@ class MyLocationPage extends StatelessWidget {
         title: const Text('My Location'),
         centerTitle: true,
       ),
-      body: GetBuilder<PreRegistrationController>(
+      body: GetBuilder<MyLocationController>(
         builder: (controller) {
           if (controller.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
@@ -54,6 +54,47 @@ class MyLocationPage extends StatelessWidget {
                   circles: controller.geofenceCircles.toSet(),
                 ),
               ),
+Obx(() {
+  if (controller.isWithinRadius.value) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      color: Palette.GREEN1.withOpacity(0.1),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.check_circle, color: Palette.GREEN3),
+          Gap(8),
+          Flexible(
+            child: Text(
+              'Great! You are within the allowed area. Keep up the good work!',
+              style: Get.textTheme.bodyLarge?.copyWith(color: Palette.GREEN3),
+              
+            ),
+          ),
+        ],
+      ),
+    );
+  } else {
+    return Container(
+      padding: EdgeInsets.all(16),
+      color: Colors.red.withOpacity(0.1),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.warning, color: Colors.red),
+          Gap(8),
+          Flexible(
+            child: Text(
+              'Oops! You are outside the allowed area. Please return to the campus to avoid being marked absent.',
+              style: Get.textTheme.bodyLarge?.copyWith(color: Colors.red),
+              
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}),
 
               // Details and Actions (Bottom Section)
               Expanded(
@@ -77,8 +118,11 @@ class MyLocationPage extends StatelessWidget {
                   ),
                   child: SingleChildScrollView(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        
                         // Event Title
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -98,8 +142,84 @@ class MyLocationPage extends StatelessWidget {
                         const Gap(8),
                     
                         // Campus and Schedule Details
-                        
-                        
+                        if (controller.activeEvent.value.campus != null)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Campus: ${controller.activeEvent.value.campus?.name ?? "Unknown"}' ,
+                                      style: Get.textTheme.bodyLarge,
+                                    ),
+                                    Text(
+                                      'Schedule: ${controller.activeSchedule.value.startTime ?? "N/A"} - ${controller.activeSchedule.value.endTime ?? "N/A"}',
+                                      style: Get.textTheme.bodyMedium,
+                                    ),
+                                    
+                                  ],
+                                ),
+                              ),
+                               Row(
+                                children: [
+                                  RippleContainer(
+                                    onTap: () {
+                                      controller.moveCameraToCampus();
+                                    },
+                                    child: HeroIcon(
+                                      HeroIcons.buildingLibrary,
+                                      size: 40,
+                                      color: Palette.PRIMARY,
+                                    ),
+                                  ),
+                                  
+                                  Obx(
+                                    (){
+                                  
+                                      final hasPreRegistration = controller
+                                      .activeSchedule.value.hasPreRegistration?.user
+                                      ?.id ==
+                                  AuthController.controller.user.value.id;
+                                  
+                                  return Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                       if(hasPreRegistration)  Container(
+                                          width: 60,
+                                          height: 60,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Palette.GREEN2.withOpacity(0.2),
+                                          ),
+                                        ),
+                                       GestureDetector(
+                                          onTap: hasPreRegistration
+                                              ? () {
+                                                 Get.to(()=> FullScreenQr(qrValue:'${controller.activeSchedule.value.hasPreRegistration?.qrCode}'  ), transition: Transition.zoom);
+                                                }
+                                              : null,
+                                          child:hasPreRegistration? QrImageView(
+                                            data:
+                                                '${controller.activeSchedule.value.hasPreRegistration?.qrCode ?? "No QR Data"}',
+                                            version: QrVersions.auto,
+                                            size: 60.0,
+                                            backgroundColor: Colors.white,
+                                          ): Container()
+                                        ),
+                                      ],
+                                    );
+                                    } 
+                                  ),
+                                  
+                                ],
+                              ),
+                            ],
+                          ),
+                        const Gap(16),
+                        Container(width: Get.size.width),
+                      
                       ],
                     ),
                   ),
